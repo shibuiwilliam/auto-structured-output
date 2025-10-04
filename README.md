@@ -402,7 +402,6 @@ Check out the `examples/` directory for more detailed examples:
 
 - **`basic_usage.py`**: 5 basic examples covering common use cases
 - **`advanced_examples.py`**: 6 advanced examples with complex structures
-- **`save_load_schema.py`**: Schema persistence and versioning
 
 ## Best Practices
 
