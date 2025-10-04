@@ -1,35 +1,14 @@
 """Module for building Pydantic models from JSON schemas"""
 
-from datetime import date, datetime, time
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, create_model
 
+from .model import StringFormat, SupportedType
+
 
 class ModelBuilder:
     """Class for building Pydantic models from JSON schemas"""
-
-    TYPE_MAPPING = {
-        "string": str,
-        "integer": int,
-        "number": float,
-        "boolean": bool,
-        "array": list,
-        "object": dict,
-        "null": type(None),
-    }
-
-    FORMAT_MAPPING = {
-        "date-time": datetime,
-        "date": date,
-        "time": time,
-        "email": str,
-        "uuid": str,
-        "uri": str,
-        "hostname": str,
-        "ipv4": str,
-        "ipv6": str,
-    }
 
     def build_model(self, schema: dict[str, Any], model_name: str | None = None) -> type[BaseModel]:
         """Generate pydantic.BaseModel class from schema
@@ -108,7 +87,12 @@ class ModelBuilder:
 
         # Handle multiple types (e.g., ["string", "null"])
         if isinstance(type_str, list):
-            types = [self.TYPE_MAPPING.get(t, str) for t in type_str]
+            types = []
+            for t in type_str:
+                if SupportedType.is_supported_type(t):
+                    types.append(SupportedType.from_str(t).to_type_mapping())
+                else:
+                    types.append(str)
             # Create Union type
             if len(types) == 1:
                 return types[0]
@@ -120,9 +104,8 @@ class ModelBuilder:
 
         # Handle format specification
         if "format" in field_info:
-            format_type = self.FORMAT_MAPPING.get(field_info["format"])
-            if format_type:
-                return format_type
+            if StringFormat.is_supported_format(field_info["format"]):
+                return StringFormat(field_info["format"]).to_format_mapping()
 
         # Handle array type
         if type_str == "array":
@@ -133,7 +116,9 @@ class ModelBuilder:
             return self._handle_object(field_info)
 
         # Map basic types
-        return self.TYPE_MAPPING.get(type_str, str)
+        if SupportedType.is_supported_type(type_str):
+            return SupportedType.from_str(type_str).to_type_mapping()
+        return str
 
     def _handle_array(self, field_info: dict[str, Any]) -> type:
         """Handle array type

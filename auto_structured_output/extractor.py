@@ -42,11 +42,14 @@ class StructureExtractor:
         self.schema_generator = SchemaGenerator()
         self.model_builder = ModelBuilder()
 
-    def extract_structure(self, prompt: str) -> type[BaseModel]:
+    def extract_structure(self, prompt: str, use_high_reasoning: bool = False) -> type[BaseModel]:
         """Extract structure from prompt and return Pydantic model
 
         Args:
             prompt: Natural language prompt describing the output format
+            use_high_reasoning: If True, use gpt-5 with enhanced reasoning to infer
+                              optimal structure from unclear prompts. If False (default),
+                              use gpt-4o for prompts with clearly defined structure.
 
         Returns:
             Class inheriting from pydantic.BaseModel
@@ -55,10 +58,22 @@ class StructureExtractor:
             ExtractionError: If structure extraction fails
             SchemaValidationError: If schema validation fails
             ModelBuildError: If model building fails
+
+        Examples:
+            >>> # Standard mode - clearly defined structure
+            >>> UserModel = extractor.extract_structure(
+            ...     "Extract user with name (string), age (integer), email (email format)"
+            ... )
+
+            >>> # High reasoning mode - infer structure from context
+            >>> AnalysisModel = extractor.extract_structure(
+            ...     "Analyze this customer feedback and extract key insights",
+            ...     use_high_reasoning=True
+            ... )
         """
         try:
             # 1. Extract structure using OpenAI
-            schema_json = self._extract_schema_from_prompt(prompt)
+            schema_json = self._extract_schema_from_prompt(prompt, use_high_reasoning)
 
             # 2. Validate JSON schema
             validated_schema = self._validate_schema(schema_json)
@@ -133,11 +148,12 @@ class StructureExtractor:
         except Exception as e:
             raise ModelBuildError(f"Failed to build model: {e}") from e
 
-    def _extract_schema_from_prompt(self, prompt: str) -> dict[str, Any]:
+    def _extract_schema_from_prompt(self, prompt: str, use_high_reasoning: bool = False) -> dict[str, Any]:
         """Extract JSON schema from prompt (internal method)
 
         Args:
             prompt: Natural language prompt
+            use_high_reasoning: Whether to use high reasoning mode
 
         Returns:
             Extracted JSON Schema
@@ -146,7 +162,7 @@ class StructureExtractor:
             ExtractionError: If schema extraction fails
         """
         try:
-            return self.schema_generator.extract_from_prompt(prompt, self.client)
+            return self.schema_generator.extract_from_prompt(prompt, self.client, use_high_reasoning)
         except Exception as e:
             raise ExtractionError(f"Failed to extract schema: {e}") from e
 

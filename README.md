@@ -67,6 +67,70 @@ user = response.choices[0].message.parsed
 print(f"Name: {user.name}, Age: {user.age}, Email: {user.email}")
 ```
 
+### High Reasoning Mode
+
+For prompts where the expected structure is **not clearly defined**, use high reasoning mode with `gpt-5`:
+
+```python
+# Infer optimal structure from vague requirements
+AnalysisModel = extractor.extract_structure(
+    "Analyze customer feedback and extract actionable insights",
+    use_high_reasoning=True  # Uses gpt-5 for deep reasoning
+)
+
+# The model will intelligently infer fields like:
+# - sentiment, product_quality, delivery_experience, satisfaction_score, etc.
+```
+
+## Two Modes of Operation
+
+### Standard Mode (Default) - `gpt-4o`
+
+Use when the expected output structure is **clearly defined** in the prompt:
+
+```python
+# ✅ Good for standard mode - explicit structure
+UserModel = extractor.extract_structure(
+    "Extract user with name (string), age (integer), email (email format)"
+)
+```
+
+**Characteristics:**
+- Fast and efficient
+- Uses `gpt-4o` model
+- Best for prompts with explicit field definitions
+- Lower API cost
+
+### High Reasoning Mode - `gpt-5`
+
+Use when the structure needs to be **inferred from context**:
+
+```python
+# ✅ Good for high reasoning - infer from intent
+FeedbackModel = extractor.extract_structure(
+    "Analyze customer feedback and extract key insights about product and service quality",
+    use_high_reasoning=True
+)
+```
+
+**Characteristics:**
+- Deep contextual analysis
+- Uses `gpt-5` model with enhanced reasoning
+- Infers optimal structure from domain knowledge
+- Best for exploratory or unclear requirements
+- Higher API cost but more comprehensive results
+
+### When to Use Each Mode
+
+| Scenario | Recommended Mode | Reason |
+|----------|-----------------|--------|
+| Explicit field list in prompt | Standard | Structure is clear |
+| "Extract user with name, age, email" | Standard | Fields explicitly defined |
+| "Analyze customer feedback" | High Reasoning | Structure needs inference |
+| "Extract insights from data" | High Reasoning | Intent-based, not field-based |
+| Rapid prototyping with clear requirements | Standard | Faster and cheaper |
+| Exploring optimal structure for new use case | High Reasoning | Leverages domain knowledge |
+
 ## Usage Examples
 
 ### Basic Types
@@ -259,10 +323,15 @@ except ExtractionError as e:
 - `date-time` → `datetime`
 - `date` → `date`
 - `time` → `time`
-- `email` → `EmailStr`
-- `uuid` → `UUID`
-- `hostname`, `ipv4`, `ipv6`
+- `duration` → `str`
+- `email` → `str`
+- `uuid` → `str`
+- `hostname` → `str`
+- `ipv4` → `str`
+- `ipv6` → `str`
 - Custom patterns with regex
+
+**Note:** The `uri` format is NOT supported by OpenAI Structured Outputs and should be avoided.
 
 ### Validation Constraints
 
@@ -334,9 +403,13 @@ pytest -v tests/
 - **test_extractor.py** (14 tests): Structure extraction, save/load, error handling
 - **test_schema_generator.py** (13 tests): Schema extraction, validation, edge cases
 - **test_model_builder.py** (12 tests): Model building with various types
-- **test_validators.py** (28 tests): All validation utilities
+- **test_validators.py** (35 tests): All validation utilities, enum-based validation
 
 All tests use mocks to avoid actual OpenAI API calls.
+
+```
+============================== 74 passed in 0.06s ==============================
+```
 
 ## Development
 
@@ -351,7 +424,7 @@ cd auto-structured-output
 pip install -e ".[dev]"
 
 # Set up environment variables
-cp .env.example .env
+cp .envrc.example .env
 # Edit .env and add your OpenAI API key
 ```
 
@@ -376,24 +449,26 @@ make check
 ```
 auto-structured-output/
 ├── auto_structured_output/    # Main package
-│   ├── __init__.py
-│   ├── extractor.py           # Main API
-│   ├── schema_generator.py    # Schema extraction
-│   ├── model_builder.py       # Pydantic model building
-│   ├── prompts.py             # Prompt templates
-│   └── validators.py          # Validation utilities
-├── tests/                     # Test suite
-│   ├── conftest.py            # Pytest fixtures
-│   ├── test_extractor.py
-│   ├── test_schema_generator.py
-│   ├── test_model_builder.py
-│   └── test_validators.py
-├── examples/                  # Usage examples
-│   ├── basic_usage.py
-│   ├── advanced_examples.py
-│   └── save_load_schema.py
-├── pyproject.toml             # Project configuration
-└── README.md
+│   ├── __init__.py           # Public API exports
+│   ├── model.py              # SupportedType & StringFormat enums
+│   ├── extractor.py          # Main API
+│   ├── schema_generator.py   # Schema extraction (2 modes)
+│   ├── model_builder.py      # Pydantic model building
+│   ├── prompts.py            # Prompt templates
+│   └── validators.py         # Validation utilities
+├── tests/                    # Test suite (74 tests)
+│   ├── conftest.py           # Pytest fixtures
+│   ├── test_extractor.py     # 14 tests
+│   ├── test_schema_generator.py # 13 tests
+│   ├── test_model_builder.py    # 12 tests
+│   └── test_validators.py       # 35 tests
+├── examples/                 # Usage examples
+│   ├── basic_usage.py           # 5 basic examples
+│   ├── advanced_examples.py     # 6 advanced examples
+│   └── high_reasoning_examples.py # 6 high reasoning examples
+├── pyproject.toml            # Project configuration
+├── CLAUDE.md                 # Implementation documentation
+└── README.md                 # This file
 ```
 
 ## Examples
@@ -402,14 +477,34 @@ Check out the `examples/` directory for more detailed examples:
 
 - **`basic_usage.py`**: 5 basic examples covering common use cases
 - **`advanced_examples.py`**: 6 advanced examples with complex structures
+- **`high_reasoning_examples.py`**: 6 examples using high reasoning mode for vague/complex prompts
+  - Customer feedback analysis
+  - Meeting summary extraction
+  - Research paper metadata
+  - Job application evaluation
+  - Financial transaction analysis
+  - Product review insights
+- **`save_load_schema.py`**: Schema persistence examples
 
 ## Best Practices
 
-1. **Reuse Schemas**: Save frequently used schemas to JSON files to avoid redundant API calls
-2. **Be Specific**: Provide clear descriptions in prompts for better schema generation
-3. **Validate Early**: Use validation before building models to catch errors early
-4. **Handle Errors**: Always catch and handle `SchemaValidationError` and `ExtractionError`
-5. **Type Safety**: Use generated models with type checkers like mypy for better code quality
+1. **Choose the Right Mode**:
+   - Use standard mode (default) for prompts with explicit field definitions
+   - Use high reasoning mode for prompts requiring structure inference from context
+
+2. **Reuse Schemas**: Save frequently used schemas to JSON files to avoid redundant API calls
+
+3. **Be Specific in Standard Mode**: Provide clear field descriptions in prompts for better schema generation
+
+4. **Leverage Context in High Reasoning Mode**: Describe the use case and intent rather than specific fields
+
+5. **Validate Early**: Use validation before building models to catch errors early
+
+6. **Handle Errors**: Always catch and handle `SchemaValidationError` and `ExtractionError`
+
+7. **Type Safety**: Use generated models with type checkers like mypy for better code quality
+
+8. **Cost Optimization**: Use standard mode when possible to minimize API costs; reserve high reasoning for complex cases
 
 ## API Reference
 
@@ -424,8 +519,20 @@ class StructureExtractor:
     def extract_structure(
         self,
         prompt: str,
-        model_name: str | None = None
+        use_high_reasoning: bool = False
     ) -> type[BaseModel]
+    """
+    Extract structure from natural language prompt.
+
+    Args:
+        prompt: Natural language prompt describing the output format
+        use_high_reasoning: If True, use gpt-5 with enhanced reasoning to infer
+                          optimal structure from unclear prompts. If False (default),
+                          use gpt-4o for prompts with clearly defined structure.
+
+    Returns:
+        Dynamically generated Pydantic BaseModel class
+    """
 
     @staticmethod
     def save_extracted_json(
@@ -446,8 +553,20 @@ class SchemaGenerator:
     def extract_from_prompt(
         self,
         prompt: str,
-        client: OpenAI | AzureOpenAI
+        client: OpenAI | AzureOpenAI,
+        use_high_reasoning: bool = False
     ) -> dict[str, Any]
+    """
+    Extract JSON schema from natural language prompt.
+
+    Args:
+        prompt: Natural language prompt
+        client: OpenAI or Azure OpenAI client
+        use_high_reasoning: Whether to use gpt-5 for enhanced reasoning
+
+    Returns:
+        Extracted JSON schema as dictionary
+    """
 
     def validate_schema(self, schema: dict[str, Any]) -> dict[str, Any]
 ```
@@ -495,11 +614,15 @@ class SchemaValidator:
 
 ## Environment Variables
 
-Create a `.env` file in your project root:
+Create a `.envrc` file in your project root:
 
 ```bash
 # OpenAI Configuration
 OPENAI_API_KEY=your-openai-api-key-here
+
+# Optional: Custom Model Configuration
+# BASIC_PREDICTION_MODEL=gpt-4o          # Model for standard mode (default: gpt-4o)
+# HIGH_PREDICTION_MODEL=gpt-5            # Model for high reasoning mode (default: same as BASIC_PREDICTION_MODEL)
 
 # Optional: Azure OpenAI Configuration
 # AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
@@ -532,9 +655,54 @@ import os
 from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-# Make sure you have access to gpt-4o model
+# Make sure you have access to gpt-4o model (and gpt-5 for high reasoning mode)
 ```
+
+**Q: High reasoning mode not working as expected**
+```python
+# Make sure you have access to gpt-5 model
+# You can configure custom models via environment variables:
+import os
+os.environ["HIGH_PREDICTION_MODEL"] = "gpt-5"  # or your preferred model
+
+# Or use a different model that supports reasoning
+os.environ["HIGH_PREDICTION_MODEL"] = "o1-preview"
+```
+
+**Q: `uri` format not supported error**
+```python
+# The uri format is not supported by OpenAI Structured Outputs
+# ❌ Bad: {"type": "string", "format": "uri"}
+# ✅ Good: {"type": "string", "description": "URL string"}
+```
+
+## Recent Improvements
+
+### Centralized Type System (v0.1.0)
+- **Enum-based validation**: All type and format validation now uses `SupportedType` and `StringFormat` enums
+- **Single source of truth**: Eliminated ~50 lines of duplicate code
+- **Better type safety**: Improved IDE support and autocomplete
+- See [ENUM_REFACTORING.md](ENUM_REFACTORING.md) for details
+
+### High Reasoning Mode
+- **Deep analysis**: Uses gpt-5 to infer optimal structure from vague prompts
+- **Context-aware**: Analyzes domain knowledge and business requirements
+- **Flexible configuration**: Customize models via environment variables
+
+### Validation Consolidation
+- **Simplified architecture**: All validation in `SchemaValidator` class
+- **51% code reduction**: `SchemaGenerator` reduced from 169 to 82 lines
+- **Better separation**: Clear boundaries between schema generation and validation
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## Acknowledgments
+
+- Built on top of [OpenAI's Structured Outputs API](https://platform.openai.com/docs/guides/structured-outputs)
+- Uses [Pydantic](https://docs.pydantic.dev/) for data validation and model generation

@@ -9,6 +9,7 @@ from .extractor import (
     SchemaValidationError,
     StructureExtractor,
 )
+from .model import StringFormat, SupportedType
 from .model_builder import ModelBuilder
 from .schema_generator import SchemaGenerator
 from .validators import SchemaValidator
@@ -20,6 +21,8 @@ __all__ = [
     "SchemaGenerator",
     "ModelBuilder",
     "SchemaValidator",
+    "SupportedType",
+    "StringFormat",
     "ExtractionError",
     "SchemaValidationError",
     "ModelBuildError",

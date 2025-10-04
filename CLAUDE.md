@@ -2,49 +2,62 @@
 
 ## Overview
 
-This project is a Python library that automatically extracts output formats from natural language prompts and defines them as OpenAI Structured Outputs.
+This project is a Python library that automatically extracts output formats from natural language prompts and defines them as OpenAI Structured Outputs. It features two modes of operation: standard mode for clear prompts and high reasoning mode for inferring structure from vague requirements.
 
 For OpenAI Structured Outputs specification, see:
 https://platform.openai.com/docs/guides/structured-outputs
 
 ### Supported Schemas
 
-Structured Outputs supports a subset of the JSON Schema language.
+Structured Outputs supports a subset of the JSON Schema language, defined by the `SupportedType` and `StringFormat` enums in `model.py`.
 
-**Supported types:**
+**Supported types (SupportedType enum):**
 - String
 - Number
 - Boolean
 - Integer
 - Object
 - Array
+- Null
 - Enum
 - anyOf
 
-**Supported properties:**
+**Supported string formats (StringFormat enum):**
+- date-time → datetime
+- date → date
+- time → time
+- duration → str
+- email → str
+- hostname → str
+- ipv4 → str
+- ipv6 → str
+- uuid → str
 
-String properties:
-- `pattern` — A regular expression that the string must match
-- `format` — Predefined formats: date-time, time, date, duration, email, hostname, ipv4, ipv6, uuid
+**Note:** The `uri` format is NOT supported by OpenAI Structured Outputs and should be avoided.
 
-Number properties:
+**Number/Integer constraints:**
 - `multipleOf` — The number must be a multiple of this value
 - `maximum` — The number must be less than or equal to this value
 - `exclusiveMaximum` — The number must be less than this value
 - `minimum` — The number must be greater than or equal to this value
 - `exclusiveMinimum` — The number must be greater than this value
 
-Array properties:
+**Array constraints:**
 - `minItems` — The array must have at least this many items
 - `maxItems` — The array must have at most this many items
+- `items` — Type definition for array elements
 
 ## Key Features
 
-1. **Natural Language Prompt Parsing**: Identifies output format instructions within prompts
-2. **Automatic Structured Output Generation**: Extracts output structure in JSON format using OpenAI API
-3. **Conversion to Pydantic Models**: Automatically converts extracted structure to pydantic.BaseModel classes
-4. **OpenAI API Integration**: Uses generated models as response_format parameter
-5. **Schema Persistence**: Save and load schemas as JSON files for reuse across sessions
+1. **Two-Mode Operation**:
+   - **Standard Mode (gpt-4o)**: For prompts with clear output structure
+   - **High Reasoning Mode (gpt-5)**: For inferring structure from vague or implicit requirements
+2. **Natural Language Prompt Parsing**: Identifies output format instructions within prompts
+3. **Automatic Structured Output Generation**: Extracts output structure in JSON format using OpenAI API
+4. **Conversion to Pydantic Models**: Automatically converts extracted structure to pydantic.BaseModel classes
+5. **OpenAI API Integration**: Uses generated models as response_format parameter
+6. **Schema Persistence**: Save and load schemas as JSON files for reuse across sessions
+7. **Centralized Type System**: Uses enums for type safety and single source of truth
 
 ## Architecture
 
@@ -55,22 +68,28 @@ Array properties:
 └──────────┬──────────┘
            │
            ▼
-┌─────────────────────┐
-│  Schema Extraction  │ ← OpenAI API (gpt-4o)
-│   (SchemaGenerator) │
-└──────────┬──────────┘
+┌─────────────────────────────────────────┐
+│  Schema Extraction (SchemaGenerator)    │
+│  ┌────────────────┐  ┌────────────────┐ │
+│  │ Standard Mode  │  │ High Reasoning │ │
+│  │   (gpt-4o)     │  │    (gpt-5)     │ │
+│  └────────────────┘  └────────────────┘ │
+└──────────┬──────────────────────────────┘
            │
            ▼
-┌─────────────────────┐
-│   JSON Schema       │
-│   (Validation)      │
-└──────────┬──────────┘
+┌─────────────────────────────────────────┐
+│   Schema Validation (SchemaValidator)   │
+│  - Type validation (SupportedType enum) │
+│  - Format validation (StringFormat enum)│
+│  - Constraint validation                │
+└──────────┬──────────────────────────────┘
            │
            ▼
-┌─────────────────────┐
-│  Pydantic Model     │
-│     Builder         │
-└──────────┬──────────┘
+┌─────────────────────────────────────────┐
+│  Pydantic Model Builder                 │
+│  - Uses SupportedType.to_type_mapping() │
+│  - Uses StringFormat.to_format_mapping()│
+└──────────┬──────────────────────────────┘
            │
            ▼
 ┌─────────────────────┐
@@ -82,32 +101,36 @@ Array properties:
 
 ```
 auto-structured-output/
-├── src/
-│   ├── __init__.py
-│   ├── extractor.py          # Main extraction logic with save/load
-│   ├── schema_generator.py   # JSON schema generation
-│   ├── model_builder.py      # Pydantic model construction
-│   ├── prompts.py            # OpenAI prompt templates
-│   └── validators.py         # Schema validation logic
+├── auto_structured_output/      # Main package (renamed from src/)
+│   ├── __init__.py              # Public API exports
+│   ├── model.py                 # SupportedType & StringFormat enums
+│   ├── extractor.py             # Main extraction logic with save/load
+│   ├── schema_generator.py      # JSON schema generation (2 modes)
+│   ├── model_builder.py         # Pydantic model construction
+│   ├── prompts.py               # OpenAI prompt templates
+│   └── validators.py            # Schema validation logic
 ├── tests/
 │   ├── __init__.py
-│   ├── conftest.py           # Pytest fixtures
-│   ├── test_extractor.py     # 14 tests
-│   ├── test_schema_generator.py  # 13 tests
-│   ├── test_model_builder.py     # 12 tests
-│   ├── test_validators.py    # 28 tests
+│   ├── conftest.py              # Pytest fixtures
+│   ├── test_extractor.py        # 14 tests
+│   ├── test_schema_generator.py # 13 tests
+│   ├── test_model_builder.py    # 12 tests
+│   ├── test_validators.py       # 35 tests
 │   └── README.md
 ├── examples/
 │   ├── __init__.py
-│   ├── basic_usage.py        # 5 basic examples
-│   ├── advanced_examples.py  # 6 advanced examples
-│   ├── save_load_schema.py   # Save/load functionality
+│   ├── basic_usage.py           # 5 basic examples
+│   ├── advanced_examples.py     # 6 advanced examples
+│   ├── high_reasoning_examples.py # 6 high reasoning examples
+│   ├── save_load_schema.py      # Save/load functionality
 │   └── README.md
-├── pyproject.toml
+├── pyproject.toml               # Project config with hatchling
 ├── uv.lock
 ├── Makefile
 ├── .gitignore
 ├── .env.example
+├── CLAUDE.md                    # This file
+├── ENUM_REFACTORING.md          # Enum refactoring documentation
 └── README.md
 ```
 
@@ -115,7 +138,7 @@ auto-structured-output/
 
 ### 1. StructureExtractor Class (`extractor.py`)
 
-Main class for extracting structure from natural language prompts.
+Main class for extracting structure from natural language prompts with two modes.
 
 ```python
 from auto_structured_output.extractor import StructureExtractor
@@ -125,8 +148,16 @@ from openai import OpenAI
 client = OpenAI(api_key="your-api-key")
 extractor = StructureExtractor(client)
 
-# Extract structure from prompt
-UserModel = extractor.extract_structure("Extract user information with name, age, and email")
+# Standard mode (clear structure) - uses gpt-4o by default
+UserModel = extractor.extract_structure(
+    "Extract user information with name (string), age (integer), and email (string with email format)"
+)
+
+# High reasoning mode (vague/unclear structure) - uses gpt-5 by default
+InsightModel = extractor.extract_structure(
+    "Analyze customer feedback and extract actionable insights",
+    use_high_reasoning=True
+)
 
 # Use in OpenAI API
 response = client.chat.completions.create(
@@ -151,7 +182,7 @@ LoadedModel = StructureExtractor.load_from_json("user_schema.json")
 
 ### 2. SchemaGenerator Class (`schema_generator.py`)
 
-Handles JSON schema generation and validation using OpenAI API.
+Handles JSON schema generation and validation using OpenAI API with configurable models.
 
 ```python
 from auto_structured_output.schema_generator import SchemaGenerator
@@ -160,21 +191,32 @@ from openai import OpenAI
 client = OpenAI(api_key="your-api-key")
 generator = SchemaGenerator()
 
-# Extract schema from prompt
+# Model configuration via environment variables:
+# BASIC_PREDICTION_MODEL (default: "gpt-4o")
+# HIGH_PREDICTION_MODEL (default: same as BASIC_PREDICTION_MODEL)
+
+# Extract schema from prompt - standard mode
 schema = generator.extract_from_prompt(
     "Extract user with name (string), age (integer), and email (string with email format)",
     client
 )
 
-# Validate schema
+# Extract schema from prompt - high reasoning mode
+schema = generator.extract_from_prompt(
+    "Analyze customer feedback and extract insights",
+    client,
+    use_high_reasoning=True
+)
+
+# Validate schema (delegates to SchemaValidator)
 validated_schema = generator.validate_schema(schema)
 ```
 
-Uses centralized prompt templates from `prompts.py` for consistent schema extraction.
+Uses centralized prompt templates from `prompts.py` for consistent schema extraction. All validation logic has been migrated to `SchemaValidator` class for better separation of concerns.
 
 ### 3. ModelBuilder Class (`model_builder.py`)
 
-Converts JSON schemas to Pydantic BaseModel classes using `pydantic.create_model()`.
+Converts JSON schemas to Pydantic BaseModel classes using `pydantic.create_model()`. Uses centralized `SupportedType` and `StringFormat` enums for type mapping.
 
 ```python
 from auto_structured_output.model_builder import ModelBuilder
@@ -196,34 +238,42 @@ schema = {
 UserModel = builder.build_model(schema)
 ```
 
-**Type Mapping:**
+**Type Mapping (via SupportedType enum):**
 - string → str
 - integer → int
 - number → float
 - boolean → bool
 - array → list[T]
 - object → nested BaseModel
+- null → type(None)
 - enum → Literal[...]
+- anyOf → Union[...]
 
-**Format Support:**
+**Format Support (via StringFormat enum):**
 - date-time → datetime
 - date → date
 - time → time
-- email → EmailStr
-- uuid → UUID
+- duration → str
+- email → str
+- hostname → str
+- ipv4 → str
+- ipv6 → str
+- uuid → str
 
 ### 4. SchemaValidator Class (`validators.py`)
 
-Comprehensive validation utilities for JSON schemas.
+Comprehensive validation utilities for JSON schemas. Uses `SupportedType` and `StringFormat` enums for validation.
 
 ```python
 from auto_structured_output.validators import SchemaValidator
 
-# Validate type
+# Validate type (uses SupportedType.is_supported_type())
 SchemaValidator.validate_type("string")  # Returns True
+SchemaValidator.validate_type("null")    # Returns True
 
-# Validate string format
+# Validate string format (uses StringFormat.is_supported_format())
 SchemaValidator.validate_string_format("email")  # Returns True
+SchemaValidator.validate_string_format("uri")    # Raises ValueError (not supported)
 
 # Validate number constraints
 SchemaValidator.validate_number_constraints({
@@ -235,7 +285,8 @@ SchemaValidator.validate_number_constraints({
 # Validate array constraints
 SchemaValidator.validate_array_constraints({
     "minItems": 1,
-    "maxItems": 10
+    "maxItems": 10,
+    "items": {"type": "string"}
 })
 
 # Validate enum
@@ -246,7 +297,16 @@ SchemaValidator.validate_required_fields(
     required=["name", "age"],
     properties={"name": {"type": "string"}, "age": {"type": "integer"}}
 )
+
+# Validate complete schema (comprehensive validation)
+validated_schema = SchemaValidator.validate_schema(schema)
 ```
+
+**Key Improvements:**
+- All validation now uses centralized enums from `model.py`
+- Complete schema validation with `validate_schema()` method
+- Handles metadata fields (title, default, examples)
+- Single source of truth for supported types and formats
 
 ## Usage Examples
 
@@ -357,10 +417,13 @@ The library includes a comprehensive test suite with **74 tests** covering all m
 make test
 
 # Run with coverage
-pytest --cov=src tests/
+pytest --cov=auto_structured_output tests/
 
 # Run specific test file
 pytest tests/test_extractor.py
+
+# Run with verbose output
+make test-verbose
 ```
 
 ### Test Coverage
@@ -368,22 +431,31 @@ pytest tests/test_extractor.py
 - **test_extractor.py** (14 tests): Structure extraction, save/load functionality, error handling
 - **test_schema_generator.py** (13 tests): Schema extraction, validation, edge cases
 - **test_model_builder.py** (12 tests): Model building with various types and constraints
-- **test_validators.py** (28 tests): All validation utilities and constraint checking
+- **test_validators.py** (35 tests): All validation utilities, constraint checking, and enum-based validation
 
 All tests use mocks to avoid actual OpenAI API calls during testing.
+
+### Test Results
+
+```
+============================== 74 passed in 0.06s ==============================
+```
 
 ## Error Handling
 
 ```python
 from auto_structured_output.extractor import (
     ExtractionError,
-    SchemaValidationError
+    SchemaValidationError,
+    ModelBuildError
 )
 
 try:
     model = extractor.extract_structure("invalid prompt")
 except SchemaValidationError as e:
     print(f"Schema validation failed: {e}")
+except ModelBuildError as e:
+    print(f"Model building failed: {e}")
 except ExtractionError as e:
     print(f"Extraction failed: {e}")
 ```
@@ -391,6 +463,7 @@ except ExtractionError as e:
 **Exception Hierarchy:**
 - `ExtractionError` - Base exception for extraction errors
 - `SchemaValidationError` - Schema validation failures (inherits from ExtractionError)
+- `ModelBuildError` - Model building failures (inherits from ExtractionError)
 
 ## Advanced Features
 
@@ -481,16 +554,13 @@ dev = [
 
 ```bash
 # Format code
-make format
+make lint_fmt
 
 # Lint code
 make lint
 
 # Type checking
-make typecheck
-
-# Run all checks
-make check
+make mypy
 ```
 
 ### Project Structure
@@ -502,18 +572,53 @@ All source code is in the `src/auto_structured_output/` directory:
 
 ## Best Practices
 
-1. **Reuse Schemas**: Save frequently used schemas to JSON files and load them as needed
-2. **Validation**: Always validate schemas before building models
-3. **Error Handling**: Catch specific exceptions for better error messages
-4. **Prompt Design**: Be specific in prompts about required vs optional fields
-5. **Type Safety**: Use the generated models with type checkers like mypy
+1. **Choose the Right Mode**:
+   - Use **standard mode** when prompt clearly specifies output structure
+   - Use **high reasoning mode** when structure needs to be inferred from context
 
-## License
+2. **Reuse Schemas**: Save frequently used schemas to JSON files and load them as needed
 
-MIT License
+3. **Validation**: Always validate schemas before building models (handled automatically)
 
-## Contributing
+4. **Error Handling**: Catch specific exceptions for better error messages
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+5. **Prompt Design**:
+   - Standard mode: Be specific about field names, types, and constraints
+   - High reasoning mode: Focus on business context and requirements
 
-Please make sure to update tests as appropriate.
+6. **Type Safety**: Use the generated models with type checkers like mypy
+
+7. **Model Configuration**: Set environment variables for custom models:
+   ```bash
+   export BASIC_PREDICTION_MODEL="gpt-4o"
+   export HIGH_PREDICTION_MODEL="gpt-5"
+   ```
+
+8. **Avoid Unsupported Features**: Do not use `uri` format (not supported by OpenAI)
+
+## Recent Improvements
+
+### Enum Refactoring (see ENUM_REFACTORING.md)
+
+All type and format validation now uses centralized enums:
+- `SupportedType` enum for type validation and mapping
+- `StringFormat` enum for format validation and mapping
+- Eliminated ~50 lines of duplicate code
+- Single source of truth for all type/format information
+- Better IDE support and type safety
+
+### High Reasoning Mode
+
+Added support for inferring structure from vague prompts:
+- Uses gpt-5 model with enhanced reasoning capabilities
+- Specialized prompts for deep analysis and structure inference
+- Examples in `examples/high_reasoning_examples.py`
+- Configurable via `use_high_reasoning=True` parameter
+
+### Validation Consolidation
+
+All validation logic consolidated in `SchemaValidator`:
+- `validate_schema()` for complete schema validation
+- Reduced `SchemaGenerator` by 51% (169 → 82 lines)
+- Better separation of concerns
+- Metadata field support (title, default, examples)

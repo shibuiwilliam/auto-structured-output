@@ -1,33 +1,55 @@
 """Module for generating and validating JSON schemas"""
 
 import json
+import os
 from typing import Any
 
 from openai import AzureOpenAI, OpenAI
 
 from .prompts import get_schema_extraction_messages
+from .validators import SchemaValidator
 
 
 class SchemaGenerator:
     """Class responsible for generating and validating JSON schemas"""
 
-    def extract_from_prompt(self, prompt: str, client: OpenAI | AzureOpenAI) -> dict[str, Any]:
+    def __init__(self):
+        self.basic_prediction_model = os.getenv("BASIC_PREDICTION_MODEL", "gpt-4o")
+        self.high_reasoning_model = os.getenv("HIGH_PREDICTION_MODEL", self.basic_prediction_model)
+
+    def extract_from_prompt(
+        self,
+        prompt: str,
+        client: OpenAI | AzureOpenAI,
+        use_high_reasoning: bool = False,
+    ) -> dict[str, Any]:
         """Extract schema from prompt
 
         Args:
             prompt: Natural language prompt describing the output format
             client: OpenAI API client
+            use_high_reasoning: If True, use gpt-5 with enhanced reasoning for inferring
+                              structure from unclear prompts. If False, use gpt-4o for
+                              prompts with clearly defined structure.
 
         Returns:
             Extracted JSON Schema
 
         Raises:
             ValueError: If the response from OpenAI API is invalid
+
+        Notes:
+            - use_high_reasoning=False (default): Use gpt-4o for fast extraction when
+              the expected structure is clearly defined in the prompt
+            - use_high_reasoning=True: Use gpt-5 with extended reasoning to infer
+              optimal structure when the prompt lacks clear structural definition
         """
-        messages = get_schema_extraction_messages(prompt)
+
+        messages = get_schema_extraction_messages(prompt, use_high_reasoning=use_high_reasoning)
+        model = self.high_reasoning_model if use_high_reasoning else self.basic_prediction_model
 
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=messages,
             response_format={"type": "json_object"},
         )
@@ -46,6 +68,8 @@ class SchemaGenerator:
     def validate_schema(self, schema: dict[str, Any]) -> dict[str, Any]:
         """Validate schema validity
 
+        Delegates to SchemaValidator for all validation logic.
+
         Args:
             schema: JSON Schema to validate
 
@@ -55,78 +79,4 @@ class SchemaGenerator:
         Raises:
             ValueError: If schema is invalid
         """
-        # Check required fields
-        if "type" not in schema:
-            raise ValueError("Schema must have a 'type' field")
-
-        if schema["type"] != "object":
-            raise ValueError("Top-level schema must be of type 'object'")
-
-        if "properties" not in schema:
-            raise ValueError("Schema must have a 'properties' field")
-
-        # Validate properties
-        self._validate_properties(schema["properties"])
-
-        # Validate required field
-        if "required" in schema:
-            if not isinstance(schema["required"], list):
-                raise ValueError("'required' field must be a list")
-
-            for field in schema["required"]:
-                if field not in schema["properties"]:
-                    raise ValueError(f"Required field '{field}' is not defined in properties")
-
-        return schema
-
-    def _validate_properties(self, properties: dict[str, Any]) -> None:
-        """Validate properties recursively
-
-        Args:
-            properties: Properties dictionary to validate
-
-        Raises:
-            ValueError: If properties are invalid
-        """
-        if not isinstance(properties, dict):
-            raise ValueError("properties must be a dictionary")
-
-        supported_types = {
-            "string",
-            "number",
-            "integer",
-            "boolean",
-            "object",
-            "array",
-            "null",
-        }
-
-        for field_name, field_info in properties.items():
-            if not isinstance(field_info, dict):
-                raise ValueError(f"Field '{field_name}' definition is invalid")
-
-            if "type" in field_info:
-                field_type = field_info["type"]
-                if isinstance(field_type, list):
-                    # Multiple types case (like anyOf)
-                    for t in field_type:
-                        if t not in supported_types:
-                            raise ValueError(f"Type '{t}' for field '{field_name}' is not supported")
-                elif field_type not in supported_types:
-                    raise ValueError(f"Type '{field_type}' for field '{field_name}' is not supported")
-
-                # Validate nested objects
-                if field_type == "object" and "properties" in field_info:
-                    self._validate_properties(field_info["properties"])
-
-                # Validate arrays
-                if field_type == "array" and "items" in field_info:
-                    items = field_info["items"]
-                    if isinstance(items, dict) and "type" in items:
-                        if items["type"] == "object" and "properties" in items:
-                            self._validate_properties(items["properties"])
-
-            # Validate anyOf
-            if "anyOf" in field_info:
-                if not isinstance(field_info["anyOf"], list):
-                    raise ValueError(f"'anyOf' for field '{field_name}' must be a list")
+        return SchemaValidator.validate_schema(schema)

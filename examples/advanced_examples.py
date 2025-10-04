@@ -65,7 +65,7 @@ Output user profile information:
   - language
     """
 
-    run(prompt, "schemas/user_profile.json")
+    run(prompt, "examples/schemas/advanced_examples/user_profile.json")
 
 
 def example_2_complex_article():
@@ -110,7 +110,7 @@ Output article information:
   - comments_count
     """
 
-    run(prompt, "schemas/complex_article.json")
+    run(prompt, "examples/schemas/advanced_examples/complex_article.json")
 
 
 def example_3_array_of_objects():
@@ -157,7 +157,7 @@ The output should be in the following format:
 - status: "pending", "processing", "shipped", or "delivered"
     """
 
-    run(prompt, "schemas/order_system.json")
+    run(prompt, "examples/schemas/advanced_examples/order_system.json")
 
 
 def example_4_deep_nesting():
@@ -185,7 +185,7 @@ Output organization information:
       - email (string): Employee email
     """
 
-    run(prompt, "schemas/organization.json")
+    run(prompt, "examples/schemas/advanced_examples/organization.json")
 
 
 def example_5_anyof_union_types():
@@ -229,7 +229,7 @@ Output payment information:
 - timestamp (datetime): Payment timestamp
     """
 
-    run(prompt, "schemas/payment_methods.json")
+    run(prompt, "examples/schemas/advanced_examples/payment_methods.json")
 
 
 def example_6_validation_constraints():
@@ -261,7 +261,7 @@ Output product specification:
 - tags (array of strings): Product tags (minimum items: 1, maximum items: 10)
     """
 
-    run(prompt, "schemas/product_specification.json")
+    run(prompt, "examples/schemas/advanced_examples/product_specification.json")
 
 
 if __name__ == "__main__":

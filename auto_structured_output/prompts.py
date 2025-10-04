@@ -11,6 +11,33 @@ Strictly follow the OpenAI Structured Outputs specifications when generating sch
 - Set additionalProperties to false
 """
 
+SCHEMA_EXTRACTION_SYSTEM_PROMPT_HIGH_REASONING = """You are an expert at analyzing prompts and inferring the optimal structured output format.
+
+Your task is to deeply analyze the user's intent and context to design a comprehensive JSON Schema, even when the expected structure is not explicitly defined.
+
+[Analysis Approach]
+1. Understand the domain and use case from the prompt
+2. Identify implicit data requirements based on context
+3. Infer logical field groupings and hierarchies
+4. Determine appropriate data types and validation constraints
+5. Consider edge cases and optional fields
+6. Design a schema that maximizes utility and clarity
+
+[Design Principles]
+- Make the schema comprehensive yet focused on the core intent
+- Use clear, semantic field names that reflect business logic
+- Include appropriate validation constraints based on domain knowledge
+- Organize nested structures logically
+- Add detailed descriptions to clarify field purposes
+- Consider both current needs and potential future extensions
+
+[Quality Standards]
+- Fully comply with OpenAI Structured Outputs specifications
+- Use only supported types and constraints
+- Ensure all fields have meaningful descriptions
+- Set additionalProperties to false for type safety
+"""
+
 SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE = """Analyze the following prompt and define the expected output structure in JSON Schema format compatible with OpenAI Structured Outputs.
 
 [Prompt]
@@ -24,6 +51,7 @@ Generate a JSON Schema that meets the following requirements:
 
 2. Available formats for String type:
    - date-time, time, date, duration, email, hostname, ipv4, ipv6, uuid
+   - Caution: Avoid using format for `uri` as it is not supported by OpenAI
 
 3. Available constraints for Number/Integer types:
    - multipleOf: Multiple of a number
@@ -60,7 +88,7 @@ Output in the following JSON format:
 }}
 
 [Example]
-Input prompt: "Output username, age, and email address"
+Input prompt: "Output username, age, email address, and website URL."
 
 Output JSON Schema:
 {{
@@ -80,27 +108,104 @@ Output JSON Schema:
       "type": "string",
       "format": "email",
       "description": "Email address"
+    }},
+    "website": {{
+      "type": "string",
+      "description": "Website URL",
     }}
   }},
-  "required": ["name", "age", "email"],
+  "required": ["name", "age", "email", "website"],
   "additionalProperties": false
 }}
 """
 
+SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE_HIGH_REASONING = """Analyze the following prompt carefully and infer the optimal structured output format.
 
-def get_schema_extraction_messages(prompt: str) -> list[dict[str, str]]:
+[Context]
+{prompt}
+
+[Your Task]
+Think deeply about what structured output would best serve this use case:
+
+1. **Domain Analysis**: What is the domain or context? What kind of data is being discussed?
+2. **Intent Recognition**: What is the user trying to accomplish? What information do they need?
+3. **Structure Inference**: What fields and relationships would logically represent this information?
+4. **Type Selection**: What are the most appropriate data types and constraints for each field?
+5. **Organization**: How should the data be hierarchically organized for clarity and usability?
+
+Consider:
+- What fields are absolutely necessary vs. nice-to-have?
+- What validation constraints make sense based on domain knowledge?
+- Are there nested relationships or arrays that would improve the structure?
+- What formats (date-time, email, uuid, etc.) are appropriate?
+- What enum values would constrain fields to valid options?
+
+[Requirements]
+Generate a comprehensive JSON Schema that:
+
+1. Uses ONLY these supported types:
+   - String, Number, Boolean, Integer, Object, Array, Enum, anyOf
+
+2. Applies appropriate String formats when relevant:
+   - date-time, time, date, duration, email, hostname, ipv4, ipv6, uuid
+   - Caution: Avoid using format for `uri` as it is not supported by OpenAI
+
+3. Includes Number/Integer constraints where logical:
+   - multipleOf, minimum, maximum, exclusiveMinimum, exclusiveMaximum
+
+4. Adds Array constraints when appropriate:
+   - minItems, maxItems, items
+
+5. Follows best practices:
+   - Use descriptive field names (snake_case recommended)
+   - Provide detailed descriptions for every field
+   - Mark fields as required or optional based on necessity
+   - Include default values when appropriate
+   - Set additionalProperties to false
+   - Use enums for fields with fixed valid values
+   - Organize nested objects for clarity
+
+[Output Format]
+{{
+  "type": "object",
+  "title": "DescriptiveModelName",
+  "properties": {{
+    "field_name": {{
+      "type": "appropriate_type",
+      "description": "Clear, detailed description of this field's purpose and usage"
+    }}
+  }},
+  "required": ["essential_field_1", "essential_field_2"],
+  "additionalProperties": false
+}}
+
+Think step by step about the optimal structure before generating the schema.
+"""
+
+
+def get_schema_extraction_messages(prompt: str, use_high_reasoning: bool = False) -> list[dict[str, str]]:
     """Generate messages for schema extraction
 
     Args:
         prompt: User's natural language prompt
+        use_high_reasoning: Whether to use high reasoning mode for unclear structures
 
     Returns:
         List of messages to send to OpenAI API
     """
-    return [
-        {"role": "system", "content": SCHEMA_EXTRACTION_SYSTEM_PROMPT},
-        {
-            "role": "user",
-            "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE.format(prompt=prompt),
-        },
-    ]
+    if use_high_reasoning:
+        return [
+            {"role": "system", "content": SCHEMA_EXTRACTION_SYSTEM_PROMPT_HIGH_REASONING},
+            {
+                "role": "user",
+                "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE_HIGH_REASONING.format(prompt=prompt),
+            },
+        ]
+    else:
+        return [
+            {"role": "system", "content": SCHEMA_EXTRACTION_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE.format(prompt=prompt),
+            },
+        ]

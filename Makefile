@@ -22,3 +22,15 @@ mypy:
 .PHONY: test
 test:
 	LOG_LEVEL=DEBUG pytest -s -v tests/
+
+.PHONY: build
+build:
+	uvx --from build pyproject-build -s -w
+
+.PHONY: install
+install:
+	pip install -e .
+
+.PHONY: clean
+clean:
+	rm -rf build dist .eggs *.egg-info .pytest_cache .mypy_cache .ruff_cache

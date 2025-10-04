@@ -63,7 +63,7 @@ Please output the user information in the following format:
 
     """
 
-    run(prompt, "schemas/simple_user_model.json")
+    run(prompt, "examples/schemas/basic_usages/simple_user_model.json")
 
 
 def example_2_product_with_enum():
@@ -85,7 +85,7 @@ Please output the product information in the following format:
 - status: one of "available", "out_of_stock", "discontinued"
     """
 
-    run(prompt, "schemas/product_with_enum.json")
+    run(prompt, "examples/schemas/basic_usages/product_with_enum.json")
 
 
 def example_3_optional_fields():
@@ -111,7 +111,7 @@ Please output the book information in the following format:
 - rating (number, optional): Rating from 0 to 5
     """
 
-    run(prompt, "schemas/book_with_optional_fields.json")
+    run(prompt, "examples/schemas/basic_usages/book_with_optional_fields.json")
 
 
 def example_4_array_fields():
@@ -135,7 +135,7 @@ topics
 prerequisites
     """
 
-    run(prompt, "schemas/course_with_array_fields.json")
+    run(prompt, "examples/schemas/basic_usages/course_with_array_fields.json")
 
 
 def example_5_datetime_fields():
@@ -160,7 +160,7 @@ Please output the event information in the following format:
 - location
     """
 
-    run(prompt, "schemas/event_with_datetime_fields.json")
+    run(prompt, "examples/schemas/basic_usages/event_with_datetime_fields.json")
 
 
 if __name__ == "__main__":
