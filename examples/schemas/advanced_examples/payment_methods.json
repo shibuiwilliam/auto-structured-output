@@ -1,0 +1,50 @@
+{
+  "properties": {
+    "payment_id": {
+      "description": "Unique payment identifier",
+      "title": "Payment Id",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Payment amount",
+      "title": "Amount",
+      "type": "number"
+    },
+    "currency": {
+      "description": "Currency code (e.g., USD, EUR)",
+      "title": "Currency",
+      "type": "string"
+    },
+    "payment_method": {
+      "description": "Payment method details",
+      "title": "Payment Method",
+      "type": "string"
+    },
+    "status": {
+      "description": "Payment status",
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "Payment timestamp",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "payment_id",
+    "amount",
+    "currency",
+    "payment_method",
+    "status",
+    "timestamp"
+  ],
+  "title": "PaymentInformation",
+  "type": "object"
+}

@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "title": {
+      "description": "Book title",
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "description": "Author name",
+      "title": "Author",
+      "type": "string"
+    },
+    "isbn": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "ISBN number",
+      "title": "Isbn"
+    },
+    "publication_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Year published",
+      "title": "Publication Year"
+    },
+    "rating": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Rating from 0 to 5",
+      "title": "Rating"
+    }
+  },
+  "required": [
+    "title",
+    "author"
+  ],
+  "title": "BookInformation",
+  "type": "object"
+}

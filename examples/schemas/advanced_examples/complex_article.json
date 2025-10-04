@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "bio": {
+          "description": "Biography of the author",
+          "title": "Bio",
+          "type": "string"
+        },
+        "website": {
+          "description": "Author's website URL",
+          "title": "Website",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bio",
+        "website"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "author_id": {
+          "description": "Unique identifier for the author",
+          "title": "Author Id",
+          "type": "string"
+        },
+        "name": {
+          "description": "Author's name",
+          "title": "Name",
+          "type": "string"
+        },
+        "email": {
+          "description": "Author's email address",
+          "title": "Email",
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
+          "description": "Detailed profile information for the author"
+        }
+      },
+      "required": [
+        "author_id",
+        "name",
+        "email",
+        "profile"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "views": {
+          "description": "Number of times the article was viewed",
+          "title": "Views",
+          "type": "integer"
+        },
+        "likes": {
+          "description": "Number of likes the article received",
+          "title": "Likes",
+          "type": "integer"
+        },
+        "comments_count": {
+          "description": "Number of comments on the article",
+          "title": "Comments Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "views",
+        "likes",
+        "comments_count"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "article_id": {
+      "description": "Unique identifier for the article",
+      "title": "Article Id",
+      "type": "string"
+    },
+    "title": {
+      "description": "Title of the article",
+      "title": "Title",
+      "type": "string"
+    },
+    "body": {
+      "description": "Content of the article",
+      "title": "Body",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
+      "description": "Information about the author"
+    },
+    "tags": {
+      "description": "Tags related to the article",
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "published_at": {
+      "description": "Publication date and time of the article",
+      "format": "date-time",
+      "title": "Published At",
+      "type": "string"
+    },
+    "status": {
+      "description": "Publication status of the article",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3",
+      "description": "Metadata related to the article"
+    }
+  },
+  "required": [
+    "article_id",
+    "title",
+    "body",
+    "author",
+    "tags",
+    "published_at",
+    "status",
+    "metadata"
+  ],
+  "title": "ArticleModel",
+  "type": "object"
+}

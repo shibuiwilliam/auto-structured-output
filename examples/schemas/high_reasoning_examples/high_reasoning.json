@@ -1,0 +1,581 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "product_id": {
+          "description": "Unique identifier for the product.",
+          "title": "Product Id",
+          "type": "string"
+        },
+        "product_name": {
+          "description": "Name of the product.",
+          "title": "Product Name",
+          "type": "string"
+        },
+        "product_category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Category of the product.",
+          "title": "Product Category"
+        },
+        "price": {
+          "description": "Current price of the product.",
+          "title": "Price",
+          "type": "number"
+        },
+        "lifecycle_stage": {
+          "description": "Current lifecycle stage of the product (e.g., launched, mature, discontinued).",
+          "enum": [
+            "pre_launch",
+            "launched",
+            "mature",
+            "discontinued"
+          ],
+          "title": "Lifecycle Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "product_id",
+        "product_name",
+        "price",
+        "lifecycle_stage"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__10": {
+      "properties": {
+        "value_for_money": {
+          "description": "Perception of value for money.",
+          "enum": [
+            "excellent",
+            "good",
+            "fair",
+            "poor"
+          ],
+          "title": "Value For Money",
+          "type": "string"
+        },
+        "recommendation_likelihood": {
+          "description": "Likelihood of customers recommending the product.",
+          "title": "Recommendation Likelihood",
+          "type": "integer"
+        },
+        "repeat_purchase_intention": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether customers would buy the product again.",
+          "title": "Repeat Purchase Intention"
+        }
+      },
+      "required": [
+        "value_for_money",
+        "recommendation_likelihood"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__11": {
+      "properties": {
+        "feature_description": {
+          "description": "Description of the requested feature.",
+          "title": "Feature Description",
+          "type": "string"
+        },
+        "request_count": {
+          "description": "Number of times this feature was requested.",
+          "title": "Request Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "feature_description",
+        "request_count"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__12": {
+      "properties": {
+        "detailed_reviews_count": {
+          "description": "Number of detailed and insightful reviews.",
+          "title": "Detailed Reviews Count",
+          "type": "integer"
+        },
+        "review_with_evidence_count": {
+          "description": "Number of reviews that include evidence like photos or videos.",
+          "title": "Review With Evidence Count",
+          "type": "integer"
+        },
+        "suspected_fake_reviews_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Number of reviews suspected to be fake or manipulated.",
+          "title": "Suspected Fake Reviews Count"
+        }
+      },
+      "required": [
+        "detailed_reviews_count",
+        "review_with_evidence_count"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "positive": {
+          "description": "Number of positive reviews.",
+          "title": "Positive",
+          "type": "integer"
+        },
+        "neutral": {
+          "description": "Number of neutral reviews.",
+          "title": "Neutral",
+          "type": "integer"
+        },
+        "negative": {
+          "description": "Number of negative reviews.",
+          "title": "Negative",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "date": {
+          "description": "Date of the sentiment record.",
+          "format": "date",
+          "title": "Date",
+          "type": "string"
+        },
+        "sentiment": {
+          "description": "Sentiment on this date.",
+          "enum": [
+            "positive",
+            "neutral",
+            "negative"
+          ],
+          "title": "Sentiment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "date",
+        "sentiment"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
+        "overall_sentiment": {
+          "description": "Overall sentiment of the reviews (e.g., positive, negative, neutral).",
+          "enum": [
+            "positive",
+            "neutral",
+            "negative"
+          ],
+          "title": "Overall Sentiment",
+          "type": "string"
+        },
+        "sentiment_distribution": {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
+          "description": "Distribution of sentiment across reviews."
+        },
+        "sentiment_over_time": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Sentiment trend data over a period of time.",
+          "title": "Sentiment Over Time"
+        },
+        "review_authenticity": {
+          "description": "Indicates if the reviews are considered genuine.",
+          "title": "Review Authenticity",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "overall_sentiment",
+        "sentiment_distribution",
+        "review_authenticity"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__5": {
+      "properties": {
+        "aspect_name": {
+          "description": "Name of the product aspect (e.g., 'quality', 'design').",
+          "title": "Aspect Name",
+          "type": "string"
+        },
+        "aspect_sentiment": {
+          "description": "Sentiment of reviews for this aspect.",
+          "enum": [
+            "positive",
+            "neutral",
+            "negative"
+          ],
+          "title": "Aspect Sentiment",
+          "type": "string"
+        },
+        "mention_count": {
+          "description": "Number of times this aspect is mentioned in reviews.",
+          "title": "Mention Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "aspect_name",
+        "aspect_sentiment",
+        "mention_count"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__6": {
+      "properties": {
+        "segment_name": {
+          "description": "Name of the customer segment.",
+          "title": "Segment Name",
+          "type": "string"
+        },
+        "age_range": {
+          "description": "Age range of the segment (e.g., '18-24', '25-34').",
+          "title": "Age Range",
+          "type": "string"
+        },
+        "use_case": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Common use case for this segment.",
+          "title": "Use Case"
+        },
+        "expertise_level": {
+          "anyOf": [
+            {
+              "enum": [
+                "beginner",
+                "intermediate",
+                "expert"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Level of expertise of this segment (e.g., 'beginner', 'expert').",
+          "title": "Expertise Level"
+        }
+      },
+      "required": [
+        "segment_name",
+        "age_range"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__7": {
+      "properties": {
+        "issue_description": {
+          "description": "Description of the quality issue.",
+          "title": "Issue Description",
+          "type": "string"
+        },
+        "occurrence_count": {
+          "description": "Number of times this issue has been reported.",
+          "title": "Occurrence Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "issue_description",
+        "occurrence_count"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__8": {
+      "properties": {
+        "competitor_name": {
+          "description": "Name of the competitor.",
+          "title": "Competitor Name",
+          "type": "string"
+        },
+        "comparison_aspect": {
+          "description": "Aspect in which the comparison is made.",
+          "title": "Comparison Aspect",
+          "type": "string"
+        },
+        "comparison_result": {
+          "description": "Outcome of the comparison (e.g., 'better', 'equal', 'worse').",
+          "enum": [
+            "better",
+            "equal",
+            "worse"
+          ],
+          "title": "Comparison Result",
+          "type": "string"
+        }
+      },
+      "required": [
+        "competitor_name",
+        "comparison_aspect",
+        "comparison_result"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__9": {
+      "properties": {
+        "ease_of_use": {
+          "anyOf": [
+            {
+              "enum": [
+                "easy",
+                "moderate",
+                "difficult"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Perceived ease of use.",
+          "title": "Ease Of Use"
+        },
+        "support_experience": {
+          "anyOf": [
+            {
+              "enum": [
+                "positive",
+                "neutral",
+                "negative"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Experience with customer support.",
+          "title": "Support Experience"
+        },
+        "documentation_helpfulness": {
+          "anyOf": [
+            {
+              "enum": [
+                "very helpful",
+                "somewhat helpful",
+                "not helpful"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Helpfulness of the documentation.",
+          "title": "Documentation Helpfulness"
+        },
+        "initial_setup_difficulty": {
+          "anyOf": [
+            {
+              "enum": [
+                "easy",
+                "moderate",
+                "difficult"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Difficulty of initial setup.",
+          "title": "Initial Setup Difficulty"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "product_info": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
+      "description": "Information about the product being reviewed."
+    },
+    "sentiment_analysis": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4",
+      "description": "Analysis of overall sentiment from customer reviews."
+    },
+    "aspect_analysis": {
+      "description": "Analysis of different product aspects based on customer reviews.",
+      "items": {
+        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5"
+      },
+      "title": "Aspect Analysis",
+      "type": "array"
+    },
+    "customer_segments": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Different customer segments inferred from reviews.",
+      "title": "Customer Segments"
+    },
+    "quality_issues": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Identified quality or performance issues from reviews.",
+      "title": "Quality Issues"
+    },
+    "competitor_comparison": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__8"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Comparison with competitors as mentioned in reviews.",
+      "title": "Competitor Comparison"
+    },
+    "user_experience": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__9"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Information about the user's experience with the product."
+    },
+    "value_perception": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__10"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Customer perception of value for money."
+    },
+    "feature_requests": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__11"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of requested features or improvements.",
+      "title": "Feature Requests"
+    },
+    "review_quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__12"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Assessment of review quality and helpfulness."
+    }
+  },
+  "required": [
+    "product_info",
+    "sentiment_analysis",
+    "aspect_analysis"
+  ],
+  "title": "CustomerReviewInsights",
+  "type": "object"
+}

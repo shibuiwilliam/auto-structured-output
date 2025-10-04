@@ -1,0 +1,540 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "name": {
+          "description": "The name of the attendee.",
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "description": "The role of the attendee in the meeting.",
+          "title": "Role",
+          "type": "string"
+        },
+        "joined_late": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the attendee joined the meeting late.",
+          "title": "Joined Late"
+        }
+      },
+      "required": [
+        "name",
+        "role"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "date": {
+          "description": "The date of the meeting.",
+          "format": "date",
+          "title": "Date",
+          "type": "string"
+        },
+        "start_time": {
+          "description": "The time when the meeting started.",
+          "format": "time",
+          "title": "Start Time",
+          "type": "string"
+        },
+        "end_time": {
+          "anyOf": [
+            {
+              "format": "time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The time when the meeting ended.",
+          "title": "End Time"
+        },
+        "duration": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The duration of the meeting in the format HH:MM.",
+          "title": "Duration"
+        },
+        "location": {
+          "description": "The location of the meeting, can be physical or virtual.",
+          "title": "Location",
+          "type": "string"
+        },
+        "meeting_type": {
+          "description": "The type of meeting held.",
+          "enum": [
+            "standup",
+            "planning",
+            "retrospective",
+            "other"
+          ],
+          "title": "Meeting Type",
+          "type": "string"
+        },
+        "attendees": {
+          "description": "List of attendees along with their roles.",
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1"
+          },
+          "title": "Attendees",
+          "type": "array"
+        },
+        "absentees": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of participants who were absent.",
+          "title": "Absentees"
+        }
+      },
+      "required": [
+        "date",
+        "start_time",
+        "location",
+        "meeting_type",
+        "attendees"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "topic": {
+          "description": "The topic discussed.",
+          "title": "Topic",
+          "type": "string"
+        },
+        "allocated_time": {
+          "description": "Time allocated for the topic in the format HH:MM.",
+          "title": "Allocated Time",
+          "type": "string"
+        },
+        "actual_time_spent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Actual time spent on the topic in the format HH:MM.",
+          "title": "Actual Time Spent"
+        },
+        "status": {
+          "description": "The status of the topic by the end of the meeting.",
+          "enum": [
+            "discussed",
+            "deferred",
+            "added during meeting"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "topic",
+        "allocated_time",
+        "status"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
+        "decision": {
+          "description": "Summary of the decision made.",
+          "title": "Decision",
+          "type": "string"
+        },
+        "decision_maker": {
+          "description": "The person or group who made the decision.",
+          "title": "Decision Maker",
+          "type": "string"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Rationale behind the decision.",
+          "title": "Rationale"
+        },
+        "alternatives_considered": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of alternatives considered before making the decision.",
+          "title": "Alternatives Considered"
+        },
+        "expected_impact": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Expected impact of the decision.",
+          "title": "Expected Impact"
+        },
+        "confidence_level": {
+          "description": "Confidence level in the decision, on a scale from 1 to 5.",
+          "title": "Confidence Level",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "decision",
+        "decision_maker",
+        "confidence_level"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__5": {
+      "properties": {
+        "task_description": {
+          "description": "Description of the specific task to be performed.",
+          "title": "Task Description",
+          "type": "string"
+        },
+        "assignee": {
+          "description": "Name of the person assigned to the task.",
+          "title": "Assignee",
+          "type": "string"
+        },
+        "due_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Deadline for the task completion.",
+          "title": "Due Date"
+        },
+        "dependencies": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Tasks or decisions that this task depends on.",
+          "title": "Dependencies"
+        },
+        "priority_level": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Priority level for the task.",
+          "title": "Priority Level"
+        },
+        "success_criteria": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Criteria for determining the task is successfully completed.",
+          "title": "Success Criteria"
+        }
+      },
+      "required": [
+        "task_description",
+        "assignee"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__6": {
+      "properties": {
+        "discussion_summary": {
+          "description": "Summary of the discussion or debate.",
+          "title": "Discussion Summary",
+          "type": "string"
+        },
+        "concerns_raised": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Detail of any concerns raised.",
+          "title": "Concerns Raised"
+        },
+        "risks_identified": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Any risks identified during the discussion.",
+          "title": "Risks Identified"
+        },
+        "consensus_reached": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if consensus was reached on the topic.",
+          "title": "Consensus Reached"
+        }
+      },
+      "required": [
+        "discussion_summary"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__7": {
+      "properties": {
+        "meeting_date": {
+          "description": "Date for the follow-up meeting.",
+          "format": "date",
+          "title": "Meeting Date",
+          "type": "string"
+        },
+        "topics_to_address": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Items that need to be addressed in the follow-up meeting.",
+          "title": "Topics To Address"
+        }
+      },
+      "required": [
+        "meeting_date"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__8": {
+      "properties": {
+        "follow_up_meetings": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details of any follow-up meetings required.",
+          "title": "Follow Up Meetings"
+        },
+        "preparatory_work": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of any preparatory work required by team members before the next meeting.",
+          "title": "Preparatory Work"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "meeting_metadata": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
+      "description": "Metadata about the meeting including time, location, type, and participants."
+    },
+    "agenda_topics": {
+      "description": "List of agenda items discussed in the meeting.",
+      "items": {
+        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+      },
+      "title": "Agenda Topics",
+      "type": "array"
+    },
+    "key_decisions": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Documentation of key decisions made during the meeting.",
+      "title": "Key Decisions"
+    },
+    "action_items": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of action items generated from the meeting.",
+      "title": "Action Items"
+    },
+    "discussion_points": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Important discussion points, debates, and concerns raised during the meeting.",
+      "title": "Discussion Points"
+    },
+    "next_steps": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__8"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Outline of next steps following the meeting."
+    },
+    "blockers_issues": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of blockers or issues that need attention from leadership.",
+      "title": "Blockers Issues"
+    }
+  },
+  "required": [
+    "meeting_metadata",
+    "agenda_topics"
+  ],
+  "title": "TeamMeetingSummary",
+  "type": "object"
+}

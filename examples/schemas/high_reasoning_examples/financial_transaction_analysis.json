@@ -1,0 +1,401 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "merchant_id": {
+          "description": "Unique identifier for the merchant.",
+          "title": "Merchant Id",
+          "type": "string"
+        },
+        "industry": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Industry or sector to which the merchant belongs.",
+          "title": "Industry"
+        },
+        "geolocation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Geographical location of the merchant.",
+          "title": "Geolocation"
+        }
+      },
+      "required": [
+        "merchant_id"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "average_transaction_amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Average transaction amount in typical behavior.",
+          "title": "Average Transaction Amount"
+        },
+        "average_transaction_frequency": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Average number of transactions over a specific period.",
+          "title": "Average Transaction Frequency"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "account_id": {
+          "description": "Unique identifier for the account.",
+          "title": "Account Id",
+          "type": "string"
+        },
+        "account_age_days": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The number of days the account has been active.",
+          "title": "Account Age Days"
+        },
+        "account_balance": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Current balance of the account.",
+          "title": "Account Balance"
+        },
+        "verification_status": {
+          "anyOf": [
+            {
+              "enum": [
+                "unverified",
+                "verified",
+                "pending"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verification status of the account.",
+          "title": "Verification Status"
+        },
+        "transaction_pattern": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Pattern of typical transaction behavior."
+        }
+      },
+      "required": [
+        "account_id"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
+        "device_id": {
+          "description": "Unique identifier for the device.",
+          "title": "Device Id",
+          "type": "string"
+        },
+        "device_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Type of device used.",
+          "title": "Device Type"
+        },
+        "is_location_spoofed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the device's location appears to be spoofed.",
+          "title": "Is Location Spoofed"
+        },
+        "network_ip": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The IPv4 address from which the transaction is originated.",
+          "title": "Network Ip"
+        }
+      },
+      "required": [
+        "device_id"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__5": {
+      "properties": {
+        "risk_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Risk score associated with the transaction, where 0 is low risk and 1 is high risk.",
+          "title": "Risk Score"
+        },
+        "threat_types": {
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "account_takeover",
+                  "synthetic_identity",
+                  "money_laundering"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Types of threats identified during risk assessment.",
+          "title": "Threat Types"
+        },
+        "confidence_level": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Confidence level in the risk assessment, where 0 is low confidence and 1 is high confidence.",
+          "title": "Confidence Level"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__6": {
+      "properties": {
+        "auth_methods": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Methods used for authenticating the user.",
+          "title": "Auth Methods"
+        },
+        "auth_success_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Rate of successful authentication attempts.",
+          "title": "Auth Success Rate"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__7": {
+      "properties": {
+        "is_sanctioned": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the transaction involves sanctioned entities.",
+          "title": "Is Sanctioned"
+        },
+        "triggered_aml_flags": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the transaction triggered anti-money laundering flags.",
+          "title": "Triggered Aml Flags"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "transaction_id": {
+      "description": "Unique identifier for the transaction, used to track and associate related activities.",
+      "title": "Transaction Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "Date and time when the transaction took place.",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "amount": {
+      "description": "Monetary amount of the transaction.",
+      "title": "Amount",
+      "type": "number"
+    },
+    "currency": {
+      "description": "The currency in which the transaction was made.",
+      "title": "Currency",
+      "type": "string"
+    },
+    "merchant": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
+      "description": "Information about the merchant involved in the transaction."
+    },
+    "account": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3",
+      "description": "Information about the account from which the transaction originated."
+    },
+    "device": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4",
+      "description": "Information about the device used for the transaction."
+    },
+    "risk_assessment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Assessment of the transaction risk level."
+    },
+    "authentication": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Details about user authentication methods and history."
+    },
+    "compliance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Compliance aspects related to the transaction."
+    }
+  },
+  "required": [
+    "transaction_id",
+    "timestamp",
+    "amount",
+    "currency",
+    "merchant",
+    "account",
+    "device"
+  ],
+  "title": "FraudDetectionTransaction",
+  "type": "object"
+}

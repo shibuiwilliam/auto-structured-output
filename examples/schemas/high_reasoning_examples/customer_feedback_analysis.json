@@ -1,0 +1,409 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "product_id": {
+          "description": "Unique identifier for the product mentioned in feedback.",
+          "title": "Product Id",
+          "type": "string"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Customer's description of the product's condition upon arrival.",
+          "title": "Condition"
+        },
+        "functionality": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feedback on whether the product functions as expected.",
+          "title": "Functionality"
+        },
+        "durability": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Comments on the product's durability over time.",
+          "title": "Durability"
+        },
+        "expectation_met": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the product met customer expectations.",
+          "title": "Expectation Met"
+        },
+        "quality_issues": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Specific quality issues reported by the customer.",
+          "title": "Quality Issues"
+        }
+      },
+      "required": [
+        "product_id"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "shipping_speed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feedback on how quickly the product was delivered.",
+          "title": "Shipping Speed"
+        },
+        "packaging_quality": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Remarks on the quality of the product's packaging.",
+          "title": "Packaging Quality"
+        },
+        "delivery_accuracy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feedback on the accuracy of the delivery (e.g., correct item and quantity).",
+          "title": "Delivery Accuracy"
+        },
+        "logistics_issues": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Any issues with the logistics or delivery process.",
+          "title": "Logistics Issues"
+        },
+        "timeline_met": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the delivery met the promised timeline.",
+          "title": "Timeline Met"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "overall_satisfaction": {
+          "description": "Overall satisfaction rating given by the customer.",
+          "title": "Overall Satisfaction",
+          "type": "integer"
+        },
+        "nps_score": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Net Promoter Score given by the customer, representing likelihood to recommend.",
+          "title": "Nps Score"
+        },
+        "repurchase_likelihood": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Likelihood the customer would repurchase from us.",
+          "title": "Repurchase Likelihood"
+        },
+        "emotional_sentiment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Emotional sentiment expressed in the customer's feedback.",
+          "title": "Emotional Sentiment"
+        }
+      },
+      "required": [
+        "overall_satisfaction"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
+        "customer_service_interaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details of customer's interaction with customer service.",
+          "title": "Customer Service Interaction"
+        },
+        "responsiveness": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Rating of the responsiveness of customer service.",
+          "title": "Responsiveness"
+        },
+        "resolution_effectiveness": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feedback on how effectively issues were resolved.",
+          "title": "Resolution Effectiveness"
+        },
+        "staff_professionalism": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Rating of the professionalism of the staff.",
+          "title": "Staff Professionalism"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__5": {
+      "properties": {
+        "competitor_mentions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of competitors mentioned by customers.",
+          "title": "Competitor Mentions"
+        },
+        "price_comparisons": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feedback on price compared to competitors.",
+          "title": "Price Comparisons"
+        },
+        "alternative_products": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Alternative products considered by the customer.",
+          "title": "Alternative Products"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__6": {
+      "properties": {
+        "recommendation": {
+          "description": "A specific recommendation for improvement.",
+          "title": "Recommendation",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Priority level of the recommendation.",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Priority",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recommendation",
+        "priority"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "product_quality": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
+      "description": "Information regarding product quality as detailed in customer feedback."
+    },
+    "delivery_experience": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Details about the customer's delivery experience."
+    },
+    "customer_satisfaction": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3",
+      "description": "Metrics and qualitative assessment of customer satisfaction."
+    },
+    "service_quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Assessment of the service quality experienced by the customer."
+    },
+    "competitive_insights": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Information regarding competitors, price comparison, or alternative products considered."
+    },
+    "actionable_recommendations": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of actionable recommendations based on the feedback.",
+      "title": "Actionable Recommendations"
+    }
+  },
+  "required": [
+    "product_quality",
+    "customer_satisfaction"
+  ],
+  "title": "CustomerFeedbackAnalysis",
+  "type": "object"
+}
