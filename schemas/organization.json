@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "employee_id": {
+          "description": "Manager's employee ID",
+          "title": "Employee Id",
+          "type": "string"
+        },
+        "name": {
+          "description": "Manager's name",
+          "title": "Name",
+          "type": "string"
+        },
+        "email": {
+          "description": "Manager's email",
+          "title": "Email",
+          "type": "string"
+        }
+      },
+      "required": [
+        "employee_id",
+        "name",
+        "email"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "employee_id": {
+          "description": "Employee ID",
+          "title": "Employee Id",
+          "type": "string"
+        },
+        "name": {
+          "description": "Employee name",
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "description": "Employee role",
+          "title": "Role",
+          "type": "string"
+        },
+        "email": {
+          "description": "Employee email",
+          "title": "Email",
+          "type": "string"
+        }
+      },
+      "required": [
+        "employee_id",
+        "name",
+        "role",
+        "email"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "team_id": {
+          "description": "Team ID",
+          "title": "Team Id",
+          "type": "string"
+        },
+        "team_name": {
+          "description": "Team name",
+          "title": "Team Name",
+          "type": "string"
+        },
+        "members": {
+          "description": "List of team members",
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
+          },
+          "title": "Members",
+          "type": "array"
+        }
+      },
+      "required": [
+        "team_id",
+        "team_name",
+        "members"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
+        "dept_id": {
+          "description": "Department ID",
+          "title": "Dept Id",
+          "type": "string"
+        },
+        "dept_name": {
+          "description": "Department name",
+          "title": "Dept Name",
+          "type": "string"
+        },
+        "manager": {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
+          "description": "Department manager details"
+        },
+        "teams": {
+          "description": "List of teams in the department",
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+          },
+          "title": "Teams",
+          "type": "array"
+        }
+      },
+      "required": [
+        "dept_id",
+        "dept_name",
+        "manager",
+        "teams"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "org_id": {
+      "description": "Organization ID",
+      "title": "Org Id",
+      "type": "string"
+    },
+    "name": {
+      "description": "Organization name",
+      "title": "Name",
+      "type": "string"
+    },
+    "departments": {
+      "description": "List of departments in the organization",
+      "items": {
+        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
+      },
+      "title": "Departments",
+      "type": "array"
+    }
+  },
+  "required": [
+    "org_id",
+    "name",
+    "departments"
+  ],
+  "title": "OrganizationInformation",
+  "type": "object"
+}

@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "product_id": {
+          "description": "Unique identifier for the product",
+          "title": "Product Id",
+          "type": "string"
+        },
+        "product_name": {
+          "description": "Name of the product",
+          "title": "Product Name",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "Number of units of the product ordered",
+          "title": "Quantity",
+          "type": "integer"
+        },
+        "unit_price": {
+          "description": "Price per unit of the product",
+          "title": "Unit Price",
+          "type": "number"
+        },
+        "subtotal": {
+          "description": "Subtotal amount for the product (quantity * unit price)",
+          "title": "Subtotal",
+          "type": "number"
+        }
+      },
+      "required": [
+        "product_id",
+        "product_name",
+        "quantity",
+        "unit_price",
+        "subtotal"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "street": {
+          "description": "Street address",
+          "title": "Street",
+          "type": "string"
+        },
+        "city": {
+          "description": "City of the shipping address",
+          "title": "City",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the shipping address",
+          "title": "State",
+          "type": "string"
+        },
+        "postal_code": {
+          "description": "Postal or ZIP code",
+          "title": "Postal Code",
+          "type": "string"
+        },
+        "country": {
+          "description": "Country of the shipping address",
+          "title": "Country",
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "city",
+        "state",
+        "postal_code",
+        "country"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "order_id": {
+      "description": "Unique identifier for the order",
+      "title": "Order Id",
+      "type": "string"
+    },
+    "customer_name": {
+      "description": "Name of the customer who placed the order",
+      "title": "Customer Name",
+      "type": "string"
+    },
+    "order_date": {
+      "description": "ISO 8601 format date and time when the order was placed",
+      "format": "date-time",
+      "title": "Order Date",
+      "type": "string"
+    },
+    "items": {
+      "description": "List of items included in the order",
+      "items": {
+        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "shipping_address": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
+      "description": "Address to which the order is shipped"
+    },
+    "total_amount": {
+      "description": "Total amount for the order",
+      "title": "Total Amount",
+      "type": "number"
+    },
+    "status": {
+      "description": "Current status of the order",
+      "enum": [
+        "pending",
+        "processing",
+        "shipped",
+        "delivered"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "order_id",
+    "customer_name",
+    "order_date",
+    "items",
+    "shipping_address",
+    "total_amount",
+    "status"
+  ],
+  "title": "OrderModel",
+  "type": "object"
+}
