@@ -34,10 +34,12 @@ repos:
     rev: v1.11.2
     hooks:
       - id: mypy
-        name: mypy (package)
-        files: ^openai_failover/
+        name: mypy
         additional_dependencies:
-          - types-PyYAML
+          - pydantic>=2.11.9
+          - openai>=2.1.0
+          - python-dotenv>=1.1.1
         args:
           - --python-version=3.12
-          - --ignore-missing-imports
+          - --namespace-packages
+          - --explicit-package-bases
