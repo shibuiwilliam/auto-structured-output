@@ -330,6 +330,11 @@ make test
 
 # Format and lint
 make lint_fmt
+
+# Precommit hooks
+pre-commit install
+
+pre-commit run --all-files
 ```
 
 See [CLAUDE.md](CLAUDE.md) for implementation details.

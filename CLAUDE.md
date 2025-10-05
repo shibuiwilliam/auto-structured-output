@@ -104,7 +104,7 @@ Structured Outputs supports a subset of the JSON Schema language, defined by the
            │               │
            │               │
            │               │
-           │ Yes           │                   
+           │ Yes           │
            │◄──────────────┘
            ▼
 ┌─────────────────────────────────────────┐
@@ -151,7 +151,6 @@ auto-structured-output/
 ├── .gitignore
 ├── .env.example
 ├── CLAUDE.md                    # This file
-├── ENUM_REFACTORING.md          # Enum refactoring documentation
 └── README.md
 ```
 
