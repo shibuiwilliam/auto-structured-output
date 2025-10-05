@@ -18,14 +18,13 @@ client = OpenAI()
 extractor = StructureExtractor(client)
 
 # Just describe what you want in plain English
-UserModel = extractor.extract_structure(
-    "Extract user with name, age, and email"
-)
+prompt = "Extract user with name, age, and email"
+UserModel = extractor.extract_structure(prompt)
 
 # Use it immediately with OpenAI's Structured Outputs
 response = client.chat.completions.create(
     model="gpt-4o",
-    messages=[{"role": "user", "content": "Generate a user"}],
+    messages=[{"role": "user", "content": prompt}],
     response_format=UserModel
 )
 
@@ -106,14 +105,13 @@ client = OpenAI()
 extractor = StructureExtractor(client)
 
 # Describe what you want in natural language
-UserModel = extractor.extract_structure(
-    "Extract user with name, age, and email address"
-)
+prompt = "Extract user with name, age, and email address"
+UserModel = extractor.extract_structure(prompt)
 
 # Use it with OpenAI
 response = client.chat.completions.create(
     model="gpt-4o",
-    messages=[{"role": "user", "content": "Generate a user"}],
+    messages=[{"role": "user", "content": prompt}],
     response_format=UserModel
 )
 
@@ -251,7 +249,7 @@ import os
 
 # Use different models
 os.environ["BASIC_PREDICTION_MODEL"] = "gpt-4o"  # Standard mode (default)
-os.environ["HIGH_PREDICTION_MODEL"] = "o1-preview"  # High reasoning mode
+os.environ["HIGH_PREDICTION_MODEL"] = "gpt-o1"  # High reasoning mode
 ```
 
 ### Error Handling
