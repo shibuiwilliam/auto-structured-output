@@ -1,0 +1,43 @@
+# See https://pre-commit.com for usage
+# Install with: pipx install pre-commit && pre-commit install
+# Or using uv: uv run pre-commit install
+
+ci:
+  skip: []
+  autoupdate_schedule: quarterly
+
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=512"]
+      - id: detect-private-key
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Latest as of 2025-09
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    # Keep in sync with local dev dependency when possible
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: mypy (package)
+        files: ^openai_failover/
+        additional_dependencies:
+          - types-PyYAML
+        args:
+          - --python-version=3.12
+          - --ignore-missing-imports
