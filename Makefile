@@ -21,7 +21,7 @@ mypy:
 
 .PHONY: test
 test:
-	LOG_LEVEL=DEBUG pytest -s -v tests/
+	uv run --frozen pytest -s -v tests/
 
 .PHONY: build
 build:
