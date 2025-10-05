@@ -1,4 +1,99 @@
 {
+  "$defs": {
+    "auto_structured_output__model_builder__NestedModel__1": {
+      "properties": {
+        "type": {
+          "const": "credit_card",
+          "description": "Type of payment method",
+          "title": "Type",
+          "type": "string"
+        },
+        "card_number": {
+          "description": "Card number",
+          "title": "Card Number",
+          "type": "string"
+        },
+        "expiry_date": {
+          "description": "Expiry date",
+          "title": "Expiry Date",
+          "type": "string"
+        },
+        "cvv": {
+          "description": "CVV code",
+          "title": "Cvv",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "card_number",
+        "expiry_date",
+        "cvv"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__2": {
+      "properties": {
+        "type": {
+          "const": "bank_transfer",
+          "description": "Type of payment method",
+          "title": "Type",
+          "type": "string"
+        },
+        "account_number": {
+          "description": "Bank account number",
+          "title": "Account Number",
+          "type": "string"
+        },
+        "routing_number": {
+          "description": "Routing number",
+          "title": "Routing Number",
+          "type": "string"
+        },
+        "bank_name": {
+          "description": "Bank name",
+          "title": "Bank Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "account_number",
+        "routing_number",
+        "bank_name"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "type": {
+          "const": "digital_wallet",
+          "description": "Type of payment method",
+          "title": "Type",
+          "type": "string"
+        },
+        "wallet_provider": {
+          "description": "Provider name (e.g., PayPal, Venmo)",
+          "title": "Wallet Provider",
+          "type": "string"
+        },
+        "wallet_id": {
+          "description": "Wallet ID",
+          "title": "Wallet Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "wallet_provider",
+        "wallet_id"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    }
+  },
   "properties": {
     "payment_id": {
       "description": "Unique payment identifier",
@@ -16,9 +111,19 @@
       "type": "string"
     },
     "payment_method": {
-      "description": "Payment method details",
-      "title": "Payment Method",
-      "type": "string"
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1"
+        },
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
+        },
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+        }
+      ],
+      "description": "Details of the payment method used",
+      "title": "Payment Method"
     },
     "status": {
       "description": "Payment status",
@@ -45,6 +150,6 @@
     "status",
     "timestamp"
   ],
-  "title": "PaymentInformation",
+  "title": "PaymentInformationModel",
   "type": "object"
 }

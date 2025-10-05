@@ -32,14 +32,15 @@ class ModelBuildError(ExtractionError):
 class StructureExtractor:
     """Main class for extracting structure from natural language prompts"""
 
-    def __init__(self, openai_client: OpenAI):
+    def __init__(self, openai_client: OpenAI, max_retries: int = 3):
         """Initialize
 
         Args:
             openai_client: OpenAI API client
+            max_retries: Maximum number of retry attempts for schema generation (default: 3)
         """
         self.client = openai_client
-        self.schema_generator = SchemaGenerator()
+        self.schema_generator = SchemaGenerator(max_retries=max_retries)
         self.model_builder = ModelBuilder()
 
     def extract_structure(self, prompt: str, use_high_reasoning: bool = False) -> type[BaseModel]:
@@ -71,6 +72,7 @@ class StructureExtractor:
             ...     use_high_reasoning=True
             ... )
         """
+
         try:
             # 1. Extract structure using OpenAI
             schema_json = self._extract_schema_from_prompt(prompt, use_high_reasoning)
@@ -159,10 +161,16 @@ class StructureExtractor:
             Extracted JSON Schema
 
         Raises:
+            SchemaValidationError: If schema validation fails after all retries
             ExtractionError: If schema extraction fails
         """
         try:
             return self.schema_generator.extract_from_prompt(prompt, self.client, use_high_reasoning)
+        except ValueError as e:
+            # If it's a validation error that persisted after retries, wrap it as SchemaValidationError
+            if "Failed to generate valid schema" in str(e):
+                raise SchemaValidationError(f"Schema validation failed after retries: {e}") from e
+            raise ExtractionError(f"Failed to extract schema: {e}") from e
         except Exception as e:
             raise ExtractionError(f"Failed to extract schema: {e}") from e
 

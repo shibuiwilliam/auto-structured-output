@@ -16,6 +16,7 @@ Automatically extract structured outputs from natural language prompts using Ope
 - 🔄 **Pydantic Model Creation**: Dynamically generates Pydantic `BaseModel` classes
 - 💾 **Schema Persistence**: Save and load schemas as JSON files for reuse
 - ✅ **Comprehensive Validation**: Built-in validators for all JSON Schema types and constraints
+- 🔁 **Automatic Retry with Error Feedback**: Self-correcting schema generation with intelligent retry mechanism
 - 🎯 **Type Safety**: Full support for nested objects, arrays, enums, and format specifications
 - 📦 **OpenAI Integration**: Works seamlessly with OpenAI's Structured Outputs API
 
@@ -23,6 +24,20 @@ Automatically extract structured outputs from natural language prompts using Ope
 
 ### From Source (Development)
 
+**Using uv (recommended):**
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/auto-structured-output.git
+cd auto-structured-output
+
+# Install with uv (automatically manages Python 3.12+)
+uv sync
+
+# Or install with development dependencies
+uv sync --all-groups
+```
+
+**Using pip:**
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/auto-structured-output.git
@@ -31,14 +46,16 @@ cd auto-structured-output
 # Install in editable mode
 pip install -e .
 
-# Or install with development dependencies
-pip install -e ".[dev]"
+# Or install with development dependencies (note: requires manual installation)
+pip install -e .
+pip install hatchling isort mypy pytest pytest-asyncio pytest-mock python-dotenv ruff
 ```
 
 ### Requirements
 
 - Python 3.12 or higher
 - OpenAI API key
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
 
 ## Quick Start
 
@@ -46,11 +63,12 @@ pip install -e ".[dev]"
 from openai import OpenAI
 from auto_structured_output.extractor import StructureExtractor
 
-# Initialize
+# Initialize with automatic retry (default: 3 attempts)
 client = OpenAI(api_key="your-api-key")
-extractor = StructureExtractor(client)
+extractor = StructureExtractor(client, max_retries=3)
 
 # Extract structure from natural language
+# If validation fails, it automatically retries with error feedback
 UserModel = extractor.extract_structure(
     "Extract user information with name (string), age (integer), and email (email format)"
 )
@@ -225,6 +243,32 @@ Extract tags (array of strings, minimum 1 item, maximum 10 items)
 """)
 ```
 
+### Automatic Retry with Error Feedback
+
+```python
+# The library automatically retries schema generation if validation fails
+# Each retry includes error feedback to help the model fix the issue
+
+# Default: 3 retry attempts
+extractor = StructureExtractor(client)
+
+# Custom retry limit
+extractor = StructureExtractor(client, max_retries=5)
+
+# Example: Complex schema that might need retry
+UserModel = extractor.extract_structure("""
+    Extract user information with:
+    - user_id (UUID format)
+    - name (string)
+    - age (integer, must be between 0 and 150)
+    - email (email format)
+    - status (one of: active, inactive, suspended)
+    - tags (array of strings, minimum 1, maximum 10)
+""")
+# If the first attempt generates invalid schema (e.g., missing constraints),
+# it automatically retries with error feedback until valid or max_retries reached
+```
+
 ### Save and Load Schemas
 
 ```python
@@ -300,7 +344,8 @@ from auto_structured_output.extractor import (
 try:
     model = extractor.extract_structure("Extract user data")
 except SchemaValidationError as e:
-    print(f"Schema validation failed: {e}")
+    # Raised when schema validation fails after all retry attempts
+    print(f"Schema validation failed after {extractor.schema_generator.max_retries} retries: {e}")
 except ExtractionError as e:
     print(f"Extraction failed: {e}")
 ```
@@ -415,16 +460,32 @@ All tests use mocks to avoid actual OpenAI API calls.
 
 ### Setup Development Environment
 
+**Using uv (recommended):**
 ```bash
 # Clone repository
 git clone https://github.com/yourusername/auto-structured-output.git
 cd auto-structured-output
 
 # Install with dev dependencies
-pip install -e ".[dev]"
+uv sync --all-groups
 
 # Set up environment variables
-cp .envrc.example .env
+cp .env.example .env
+# Edit .env and add your OpenAI API key
+```
+
+**Using pip:**
+```bash
+# Clone repository
+git clone https://github.com/yourusername/auto-structured-output.git
+cd auto-structured-output
+
+# Install in editable mode
+pip install -e .
+pip install hatchling isort mypy pytest pytest-asyncio pytest-mock python-dotenv ruff
+
+# Set up environment variables
+cp .env.example .env
 # Edit .env and add your OpenAI API key
 ```
 
@@ -432,16 +493,19 @@ cp .envrc.example .env
 
 ```bash
 # Format code
-make format
+make fmt
 
 # Lint code
 make lint
 
-# Type checking
-make typecheck
+# Lint and format together
+make lint_fmt
 
-# Run all checks
-make check
+# Type checking
+make mypy
+
+# Run all tests
+make test
 ```
 
 ### Project Structure
@@ -465,18 +529,35 @@ auto-structured-output/
 ├── examples/                 # Usage examples
 │   ├── basic_usage.py           # 5 basic examples
 │   ├── advanced_examples.py     # 6 advanced examples
-│   └── high_reasoning_examples.py # 6 high reasoning examples
+│   ├── high_reasoning_examples.py # 6 high reasoning examples
+│   └── schemas/                 # Example schema files
 ├── pyproject.toml            # Project configuration
+├── uv.lock                   # UV lock file
+├── Makefile                  # Development commands
+├── .env.example              # Environment variables template
 ├── CLAUDE.md                 # Implementation documentation
 └── README.md                 # This file
 ```
 
 ## Examples
 
-Check out the `examples/` directory for more detailed examples:
+Check out the `examples/` directory for detailed examples:
 
 - **`basic_usage.py`**: 5 basic examples covering common use cases
+  - Simple user extraction
+  - Product with enum status
+  - Nested objects (address)
+  - Arrays of strings
+  - Date/time formats
+
 - **`advanced_examples.py`**: 6 advanced examples with complex structures
+  - Deep nesting (user profile with settings)
+  - Arrays of objects (order with items)
+  - Mixed constraints (metrics with validation)
+  - Enums and optional fields
+  - Complex validation (blog post with tags)
+  - anyOf unions (flexible value types)
+
 - **`high_reasoning_examples.py`**: 6 examples using high reasoning mode for vague/complex prompts
   - Customer feedback analysis
   - Meeting summary extraction
@@ -484,7 +565,14 @@ Check out the `examples/` directory for more detailed examples:
   - Job application evaluation
   - Financial transaction analysis
   - Product review insights
-- **`save_load_schema.py`**: Schema persistence examples
+
+**Running Examples:**
+```bash
+# Make sure you have set up your .env file with OPENAI_API_KEY
+python examples/basic_usage.py
+python examples/advanced_examples.py
+python examples/high_reasoning_examples.py
+```
 
 ## Best Practices
 
@@ -492,21 +580,51 @@ Check out the `examples/` directory for more detailed examples:
    - Use standard mode (default) for prompts with explicit field definitions
    - Use high reasoning mode for prompts requiring structure inference from context
 
-2. **Reuse Schemas**: Save frequently used schemas to JSON files to avoid redundant API calls
+2. **Configure Retry Limits**: Adjust `max_retries` based on your needs
+   - Default (3) works well for most cases
+   - Increase for complex schemas that may need multiple corrections
+   - Decrease to fail fast during development/testing
 
-3. **Be Specific in Standard Mode**: Provide clear field descriptions in prompts for better schema generation
+3. **Reuse Schemas**: Save frequently used schemas to JSON files to avoid redundant API calls
 
-4. **Leverage Context in High Reasoning Mode**: Describe the use case and intent rather than specific fields
+4. **Be Specific in Standard Mode**: Provide clear field descriptions in prompts for better schema generation
 
-5. **Validate Early**: Use validation before building models to catch errors early
+5. **Leverage Context in High Reasoning Mode**: Describe the use case and intent rather than specific fields
 
-6. **Handle Errors**: Always catch and handle `SchemaValidationError` and `ExtractionError`
+6. **Validate Early**: Use validation before building models to catch errors early
 
-7. **Type Safety**: Use generated models with type checkers like mypy for better code quality
+7. **Handle Errors**: Always catch and handle `SchemaValidationError` and `ExtractionError`
 
-8. **Cost Optimization**: Use standard mode when possible to minimize API costs; reserve high reasoning for complex cases
+8. **Type Safety**: Use generated models with type checkers like mypy for better code quality
+
+9. **Cost Optimization**: Use standard mode when possible to minimize API costs; reserve high reasoning for complex cases
+
+10. **Monitor Retries**: In production, consider logging when retries occur to identify problematic prompts
 
 ## API Reference
+
+### Public API
+
+The library exports the following classes and exceptions:
+
+```python
+from auto_structured_output import (
+    # Main classes
+    StructureExtractor,
+    SchemaGenerator,
+    ModelBuilder,
+    SchemaValidator,
+
+    # Enums
+    SupportedType,
+    StringFormat,
+
+    # Exceptions
+    ExtractionError,
+    SchemaValidationError,
+    ModelBuildError,
+)
+```
 
 ### StructureExtractor
 
@@ -514,7 +632,18 @@ Main class for extracting structures from natural language.
 
 ```python
 class StructureExtractor:
-    def __init__(self, client: OpenAI | AzureOpenAI)
+    def __init__(
+        self,
+        client: OpenAI | AzureOpenAI,
+        max_retries: int = 3
+    )
+    """
+    Initialize StructureExtractor.
+
+    Args:
+        client: OpenAI or Azure OpenAI client
+        max_retries: Maximum number of retry attempts for schema generation (default: 3)
+    """
 
     def extract_structure(
         self,
@@ -532,6 +661,10 @@ class StructureExtractor:
 
     Returns:
         Dynamically generated Pydantic BaseModel class
+
+    Raises:
+        SchemaValidationError: If schema validation fails after all retry attempts
+        ExtractionError: If schema extraction fails
     """
 
     @staticmethod
@@ -546,10 +679,18 @@ class StructureExtractor:
 
 ### SchemaGenerator
 
-Handles JSON schema extraction and validation.
+Handles JSON schema extraction and validation with automatic retry.
 
 ```python
 class SchemaGenerator:
+    def __init__(self, max_retries: int = 3)
+    """
+    Initialize SchemaGenerator.
+
+    Args:
+        max_retries: Maximum number of retry attempts for schema generation (default: 3)
+    """
+
     def extract_from_prompt(
         self,
         prompt: str,
@@ -557,7 +698,7 @@ class SchemaGenerator:
         use_high_reasoning: bool = False
     ) -> dict[str, Any]
     """
-    Extract JSON schema from natural language prompt.
+    Extract JSON schema from natural language prompt with automatic retry.
 
     Args:
         prompt: Natural language prompt
@@ -565,7 +706,14 @@ class SchemaGenerator:
         use_high_reasoning: Whether to use gpt-5 for enhanced reasoning
 
     Returns:
-        Extracted JSON schema as dictionary
+        Extracted and validated JSON schema as dictionary
+
+    Raises:
+        ValueError: If schema validation fails after all retry attempts
+
+    Notes:
+        - Automatically retries with error feedback if validation fails
+        - Uses conversation history to provide context for corrections
     """
 
     def validate_schema(self, schema: dict[str, Any]) -> dict[str, Any]
@@ -614,7 +762,7 @@ class SchemaValidator:
 
 ## Environment Variables
 
-Create a `.envrc` file in your project root:
+Create a `.env` file in your project root (you can copy from `.env.example`):
 
 ```bash
 # OpenAI Configuration
@@ -629,6 +777,8 @@ OPENAI_API_KEY=your-openai-api-key-here
 # AZURE_OPENAI_API_KEY=your-azure-api-key
 # OPENAI_API_VERSION=2024-02-15-preview
 ```
+
+**Note:** The library will automatically load variables from `.env` files when using `python-dotenv`.
 
 ## Troubleshooting
 
@@ -678,6 +828,13 @@ os.environ["HIGH_PREDICTION_MODEL"] = "o1-preview"
 
 ## Recent Improvements
 
+### Automatic Retry with Error Feedback
+- **Self-correcting schemas**: Automatically retries when validation fails (default: 3 attempts)
+- **Error feedback loop**: Includes validation errors in retry prompts for intelligent correction
+- **Customizable retries**: Configure `max_retries` parameter per use case
+- **Conversation-based correction**: Uses LLM conversation history to provide context
+- **Improved reliability**: Significantly reduces schema generation failures
+
 ### Centralized Type System (v0.1.0)
 - **Enum-based validation**: All type and format validation now uses `SupportedType` and `StringFormat` enums
 - **Single source of truth**: Eliminated ~50 lines of duplicate code
@@ -691,8 +848,10 @@ os.environ["HIGH_PREDICTION_MODEL"] = "o1-preview"
 
 ### Validation Consolidation
 - **Simplified architecture**: All validation in `SchemaValidator` class
-- **51% code reduction**: `SchemaGenerator` reduced from 169 to 82 lines
 - **Better separation**: Clear boundaries between schema generation and validation
+- **Improved maintainability**: Centralized validation logic for easier updates
+
+**Note:** With retry functionality, `SchemaGenerator` is now 143 lines (includes retry loop).
 
 ## License
 

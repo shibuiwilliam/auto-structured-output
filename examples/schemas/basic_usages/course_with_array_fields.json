@@ -1,22 +1,22 @@
 {
   "properties": {
     "course_id": {
-      "description": "Unique identifier for the course",
+      "description": "The unique identifier for the course",
       "title": "Course Id",
       "type": "string"
     },
     "title": {
-      "description": "Title of the course",
+      "description": "The title of the course",
       "title": "Title",
       "type": "string"
     },
     "instructor": {
-      "description": "Name of the course instructor",
+      "description": "The name of the course instructor",
       "title": "Instructor",
       "type": "string"
     },
     "topics": {
-      "description": "List of topics covered in the course",
+      "description": "The list of topics covered in the course",
       "items": {
         "type": "string"
       },
@@ -24,7 +24,7 @@
       "type": "array"
     },
     "prerequisites": {
-      "description": "Course prerequisites",
+      "description": "The prerequisites required for the course",
       "title": "Prerequisites",
       "type": "string"
     }
@@ -36,6 +36,6 @@
     "topics",
     "prerequisites"
   ],
-  "title": "CourseModel",
+  "title": "CourseInformation",
   "type": "object"
 }

@@ -11,19 +11,19 @@
       "type": "string"
     },
     "start_time": {
-      "description": "Start time of the event in UTC format",
+      "description": "Start time of the event in ISO 8601 format",
       "format": "date-time",
       "title": "Start Time",
       "type": "string"
     },
     "end_time": {
-      "description": "End time of the event in UTC format",
+      "description": "End time of the event in ISO 8601 format",
       "format": "date-time",
       "title": "End Time",
       "type": "string"
     },
     "location": {
-      "description": "Location where the event is held",
+      "description": "Location where the event takes place",
       "title": "Location",
       "type": "string"
     }

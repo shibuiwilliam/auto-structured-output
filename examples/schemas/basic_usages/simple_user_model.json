@@ -3,7 +3,7 @@
     "NestedModel": {
       "properties": {
         "theme": {
-          "description": "Theme preference with default value",
+          "description": "User's preferred theme",
           "enum": [
             "light",
             "dark"
@@ -12,7 +12,7 @@
           "type": "string"
         },
         "notificationsEnabled": {
-          "description": "Whether notifications are enabled",
+          "description": "Whether user has enabled notifications",
           "title": "Notificationsenabled",
           "type": "boolean"
         }

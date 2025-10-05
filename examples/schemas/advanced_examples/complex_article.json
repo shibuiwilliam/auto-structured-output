@@ -3,7 +3,7 @@
     "auto_structured_output__model_builder__NestedModel__1": {
       "properties": {
         "bio": {
-          "description": "Biography of the author",
+          "description": "Author's biography",
           "title": "Bio",
           "type": "string"
         },
@@ -28,18 +28,18 @@
           "type": "string"
         },
         "name": {
-          "description": "Author's name",
+          "description": "Name of the author",
           "title": "Name",
           "type": "string"
         },
         "email": {
-          "description": "Author's email address",
+          "description": "Email address of the author",
           "title": "Email",
           "type": "string"
         },
         "profile": {
           "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
-          "description": "Detailed profile information for the author"
+          "description": "Author's profile information"
         }
       },
       "required": [
@@ -54,12 +54,12 @@
     "auto_structured_output__model_builder__NestedModel__3": {
       "properties": {
         "views": {
-          "description": "Number of times the article was viewed",
+          "description": "Number of views for the article",
           "title": "Views",
           "type": "integer"
         },
         "likes": {
-          "description": "Number of likes the article received",
+          "description": "Number of likes for the article",
           "title": "Likes",
           "type": "integer"
         },
@@ -96,10 +96,10 @@
     },
     "author": {
       "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
-      "description": "Information about the author"
+      "description": "Author information"
     },
     "tags": {
-      "description": "Tags related to the article",
+      "description": "Tags associated with the article",
       "items": {
         "type": "string"
       },

@@ -71,7 +71,7 @@
           "type": "string"
         },
         "members": {
-          "description": "Array of team member objects",
+          "description": "List of team members",
           "items": {
             "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
           },
@@ -101,10 +101,10 @@
         },
         "manager": {
           "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
-          "description": "Department manager details"
+          "description": "Manager of the department"
         },
         "teams": {
-          "description": "Array of team objects",
+          "description": "List of teams within the department",
           "items": {
             "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
           },
@@ -134,7 +134,7 @@
       "type": "string"
     },
     "departments": {
-      "description": "Array of department objects",
+      "description": "List of departments",
       "items": {
         "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
       },

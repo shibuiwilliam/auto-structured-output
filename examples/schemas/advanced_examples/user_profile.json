@@ -3,12 +3,12 @@
     "auto_structured_output__model_builder__NestedModel__1": {
       "properties": {
         "first_name": {
-          "description": "User's first name",
+          "description": "First name of the user",
           "title": "First Name",
           "type": "string"
         },
         "last_name": {
-          "description": "User's last name",
+          "description": "Last name of the user",
           "title": "Last Name",
           "type": "string"
         },
@@ -18,7 +18,7 @@
           "type": "string"
         },
         "avatar_url": {
-          "description": "URL of the user's avatar image",
+          "description": "URL to the user's avatar",
           "title": "Avatar Url",
           "type": "string"
         }
@@ -35,7 +35,7 @@
     "auto_structured_output__model_builder__NestedModel__2": {
       "properties": {
         "theme": {
-          "description": "User's chosen theme for the interface",
+          "description": "Preferred theme of the user interface",
           "enum": [
             "dark",
             "light"
@@ -44,12 +44,12 @@
           "type": "string"
         },
         "notifications_enabled": {
-          "description": "Whether the user has enabled notifications",
+          "description": "Indicates if notifications are enabled for the user",
           "title": "Notifications Enabled",
           "type": "boolean"
         },
         "language": {
-          "description": "Preferred language set by the user",
+          "description": "Preferred language code of the user",
           "title": "Language",
           "type": "string"
         }
@@ -70,7 +70,7 @@
       "type": "string"
     },
     "username": {
-      "description": "Username associated with the user account",
+      "description": "Username of the user",
       "title": "Username",
       "type": "string"
     },
@@ -85,7 +85,7 @@
     },
     "settings": {
       "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
-      "description": "User settings"
+      "description": "User's settings preferences"
     }
   },
   "required": [
@@ -95,6 +95,6 @@
     "profile",
     "settings"
   ],
-  "title": "UserProfileModel",
+  "title": "UserProfile",
   "type": "object"
 }

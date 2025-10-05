@@ -13,7 +13,7 @@
           "type": "string"
         },
         "quantity": {
-          "description": "Number of units ordered",
+          "description": "Quantity of the product ordered",
           "title": "Quantity",
           "type": "integer"
         },
@@ -23,7 +23,7 @@
           "type": "number"
         },
         "subtotal": {
-          "description": "Subtotal amount for the item (quantity * unit_price)",
+          "description": "Subtotal for the product (quantity * unit price)",
           "title": "Subtotal",
           "type": "number"
         }
@@ -46,22 +46,22 @@
           "type": "string"
         },
         "city": {
-          "description": "City of the shipping address",
+          "description": "City for shipping address",
           "title": "City",
           "type": "string"
         },
         "state": {
-          "description": "State of the shipping address",
+          "description": "State for shipping address",
           "title": "State",
           "type": "string"
         },
         "postal_code": {
-          "description": "Postal code of the shipping address",
+          "description": "Postal code for shipping address",
           "title": "Postal Code",
           "type": "string"
         },
         "country": {
-          "description": "Country of the shipping address",
+          "description": "Country for shipping address",
           "title": "Country",
           "type": "string"
         }
@@ -104,10 +104,10 @@
     },
     "shipping_address": {
       "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2",
-      "description": "Address where the order is to be shipped"
+      "description": "Shipping address for the order"
     },
     "total_amount": {
-      "description": "Total amount for the order including all items and taxes",
+      "description": "Total amount for the order",
       "title": "Total Amount",
       "type": "number"
     },

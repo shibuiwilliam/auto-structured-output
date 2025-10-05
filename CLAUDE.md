@@ -4,6 +4,14 @@
 
 This project is a Python library that automatically extracts output formats from natural language prompts and defines them as OpenAI Structured Outputs. It features two modes of operation: standard mode for clear prompts and high reasoning mode for inferring structure from vague requirements.
 
+**Current Status:**
+- **Version:** 0.1.0
+- **Tests:** 74 passing (14 extractor + 13 schema_generator + 12 model_builder + 35 validators)
+- **Source Files:** 7 modules (~1,207 total lines)
+- **Python Version:** 3.12+
+- **Build System:** hatchling
+- **Package Manager:** uv (recommended) or pip
+
 For OpenAI Structured Outputs specification, see:
 https://platform.openai.com/docs/guides/structured-outputs
 
@@ -52,12 +60,13 @@ Structured Outputs supports a subset of the JSON Schema language, defined by the
 1. **Two-Mode Operation**:
    - **Standard Mode (gpt-4o)**: For prompts with clear output structure
    - **High Reasoning Mode (gpt-5)**: For inferring structure from vague or implicit requirements
-2. **Natural Language Prompt Parsing**: Identifies output format instructions within prompts
-3. **Automatic Structured Output Generation**: Extracts output structure in JSON format using OpenAI API
-4. **Conversion to Pydantic Models**: Automatically converts extracted structure to pydantic.BaseModel classes
-5. **OpenAI API Integration**: Uses generated models as response_format parameter
-6. **Schema Persistence**: Save and load schemas as JSON files for reuse across sessions
-7. **Centralized Type System**: Uses enums for type safety and single source of truth
+2. **Automatic Retry with Error Feedback**: Self-correcting schema generation with intelligent retry mechanism
+3. **Natural Language Prompt Parsing**: Identifies output format instructions within prompts
+4. **Automatic Structured Output Generation**: Extracts output structure in JSON format using OpenAI API
+5. **Conversion to Pydantic Models**: Automatically converts extracted structure to pydantic.BaseModel classes
+6. **OpenAI API Integration**: Uses generated models as response_format parameter
+7. **Schema Persistence**: Save and load schemas as JSON files for reuse across sessions
+8. **Centralized Type System**: Uses enums for type safety and single source of truth
 
 ## Architecture
 
@@ -84,6 +93,19 @@ Structured Outputs supports a subset of the JSON Schema language, defined by the
 │  - Constraint validation                │
 └──────────┬──────────────────────────────┘
            │
+           │ Valid?
+           ├─ No ──────────┐
+           │                │
+           │                ▼
+           │  ┌──────────────────────────┐
+           │  │ Retry with Error Feedback│
+           │  │ (max_retries: default 3) │
+           │  └─────────┬────────────────┘
+           │            │
+           │            └──────────────────┐
+           │                               │
+           │ Yes                           │
+           │◄──────────────────────────────┘
            ▼
 ┌─────────────────────────────────────────┐
 │  Pydantic Model Builder                 │
@@ -122,8 +144,7 @@ auto-structured-output/
 │   ├── basic_usage.py           # 5 basic examples
 │   ├── advanced_examples.py     # 6 advanced examples
 │   ├── high_reasoning_examples.py # 6 high reasoning examples
-│   ├── save_load_schema.py      # Save/load functionality
-│   └── README.md
+│   └── schemas/                 # Example schema files
 ├── pyproject.toml               # Project config with hatchling
 ├── uv.lock
 ├── Makefile
@@ -144,9 +165,9 @@ Main class for extracting structure from natural language prompts with two modes
 from auto_structured_output.extractor import StructureExtractor
 from openai import OpenAI
 
-# Initialize with OpenAI client
+# Initialize with OpenAI client and retry configuration
 client = OpenAI(api_key="your-api-key")
-extractor = StructureExtractor(client)
+extractor = StructureExtractor(client, max_retries=3)  # Default: 3 retry attempts
 
 # Standard mode (clear structure) - uses gpt-4o by default
 UserModel = extractor.extract_structure(
@@ -182,20 +203,21 @@ LoadedModel = StructureExtractor.load_from_json("user_schema.json")
 
 ### 2. SchemaGenerator Class (`schema_generator.py`)
 
-Handles JSON schema generation and validation using OpenAI API with configurable models.
+Handles JSON schema generation and validation using OpenAI API with configurable models and automatic retry.
 
 ```python
 from auto_structured_output.schema_generator import SchemaGenerator
 from openai import OpenAI
 
 client = OpenAI(api_key="your-api-key")
-generator = SchemaGenerator()
+generator = SchemaGenerator(max_retries=3)  # Configure retry attempts (default: 3)
 
 # Model configuration via environment variables:
 # BASIC_PREDICTION_MODEL (default: "gpt-4o")
 # HIGH_PREDICTION_MODEL (default: same as BASIC_PREDICTION_MODEL)
 
 # Extract schema from prompt - standard mode
+# Automatically retries with error feedback if validation fails
 schema = generator.extract_from_prompt(
     "Extract user with name (string), age (integer), and email (string with email format)",
     client
@@ -212,7 +234,79 @@ schema = generator.extract_from_prompt(
 validated_schema = generator.validate_schema(schema)
 ```
 
+**Automatic Retry Mechanism:**
+
+The retry mechanism is implemented as a loop in the `extract_from_prompt` method:
+
+```python
+for attempt in range(self.max_retries):
+    try:
+        # Generate schema via OpenAI API
+        schema = self._call_api(client, model, messages)
+        last_schema = schema
+
+        # Validate schema
+        SchemaValidator.validate_schema(schema)
+
+        # If validation succeeds, return
+        return schema
+
+    except ValueError as e:
+        last_error = str(e)
+
+        # If last attempt, raise error
+        if attempt == self.max_retries - 1:
+            raise ValueError(f"Failed after {self.max_retries} attempts. Last error: {last_error}")
+
+        # Otherwise, build retry messages with error feedback
+        messages = get_schema_retry_messages(
+            original_prompt=prompt,
+            previous_schema=last_schema,
+            error_message=last_error,
+            use_high_reasoning=use_high_reasoning
+        )
+```
+
+**Key Components:**
+- **Validation in loop**: `SchemaValidator.validate_schema(schema)` called on each attempt
+- **Error feedback**: Validation errors passed to `get_schema_retry_messages()` in `prompts.py`
+- **Conversation history**: Builds message chain (system → user → assistant → user with error)
+- **Retry limit**: Configurable via `max_retries` parameter (default: 3)
+- **Exception handling**: Raises `ValueError` after exhausting all attempts
+
 Uses centralized prompt templates from `prompts.py` for consistent schema extraction. All validation logic has been migrated to `SchemaValidator` class for better separation of concerns.
+
+**Retry Prompt Template (`prompts.py`):**
+
+The `get_schema_retry_messages()` function builds the retry conversation:
+
+```python
+def get_schema_retry_messages(
+    original_prompt: str,
+    previous_schema: dict | None,
+    error_message: str,
+    use_high_reasoning: bool = False
+) -> list[dict[str, str]]:
+    # Start with original messages (system + user)
+    messages = get_schema_extraction_messages(original_prompt, use_high_reasoning)
+
+    # Add previous failed schema as assistant response
+    if previous_schema:
+        messages.append({
+            "role": "assistant",
+            "content": json.dumps(previous_schema, ensure_ascii=False)
+        })
+
+    # Add error feedback as user message with fix instructions
+    retry_prompt = f"""The previous schema had validation errors...
+    **Validation Error:** {error_message}
+    **Instructions:** 1. Read error 2. Fix issue 3. Verify constraints..."""
+
+    messages.append({"role": "user", "content": retry_prompt})
+    return messages
+```
+
+This creates a conversation flow that helps the LLM understand what went wrong and how to fix it.
 
 ### 3. ModelBuilder Class (`model_builder.py`)
 
@@ -531,20 +625,27 @@ schema = {
 [project]
 name = "auto-structured-output"
 version = "0.1.0"
-description = "Automatically extract structured outputs from natural language prompts"
+description = "Automatically extract structured outputs from natural language prompts using OpenAI"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "openai>=2.1.0",
     "pydantic>=2.11.9",
 ]
+authors = [
+    {name = "shibuiwilliam", email = "shibuiyusuke@gmail.com"},
+]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.2",
-    "pytest-mock>=3.15.1",
-    "ruff>=0.13.3",
+    "hatchling>=1.27.0",
+    "isort>=6.1.0",
     "mypy>=1.18.2",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "pytest-mock>=3.15.1",
+    "python-dotenv>=1.1.1",
+    "ruff>=0.13.3",
 ]
 ```
 
@@ -576,27 +677,48 @@ All source code is in the `src/auto_structured_output/` directory:
    - Use **standard mode** when prompt clearly specifies output structure
    - Use **high reasoning mode** when structure needs to be inferred from context
 
-2. **Reuse Schemas**: Save frequently used schemas to JSON files and load them as needed
+2. **Configure Retry Limits**: Adjust `max_retries` based on your use case
+   - Default (3) works well for most scenarios
+   - Increase for complex schemas that may need multiple corrections
+   - Decrease to fail fast during development/testing
 
-3. **Validation**: Always validate schemas before building models (handled automatically)
+3. **Reuse Schemas**: Save frequently used schemas to JSON files and load them as needed
 
-4. **Error Handling**: Catch specific exceptions for better error messages
+4. **Validation**: Always validate schemas before building models (handled automatically)
 
-5. **Prompt Design**:
+5. **Error Handling**: Catch specific exceptions for better error messages
+
+6. **Prompt Design**:
    - Standard mode: Be specific about field names, types, and constraints
    - High reasoning mode: Focus on business context and requirements
 
-6. **Type Safety**: Use the generated models with type checkers like mypy
+7. **Type Safety**: Use the generated models with type checkers like mypy
 
-7. **Model Configuration**: Set environment variables for custom models:
+8. **Model Configuration**: Set environment variables for custom models:
    ```bash
    export BASIC_PREDICTION_MODEL="gpt-4o"
    export HIGH_PREDICTION_MODEL="gpt-5"
    ```
 
-8. **Avoid Unsupported Features**: Do not use `uri` format (not supported by OpenAI)
+9. **Avoid Unsupported Features**: Do not use `uri` format (not supported by OpenAI)
+
+10. **Monitor Retries**: In production, consider logging when retries occur to identify problematic prompts
 
 ## Recent Improvements
+
+### Automatic Retry with Error Feedback
+
+Implemented self-correcting schema generation:
+- **Automatic retry**: Retries schema generation if validation fails (default: 3 attempts)
+- **Error feedback loop**: Includes validation errors in retry prompts for intelligent correction
+- **Conversation-based correction**: Uses LLM conversation history (system → user → assistant → user) to provide context
+- **Customizable retries**: Configure `max_retries` parameter per use case via `StructureExtractor` and `SchemaGenerator`
+- **Improved reliability**: Significantly reduces schema generation failures
+
+**Files Modified:**
+- `schema_generator.py`: Added `max_retries` parameter and retry loop in `extract_from_prompt()`
+- `prompts.py`: Added `get_schema_retry_messages()` function for building retry conversation
+- `extractor.py`: Added `max_retries` parameter to `StructureExtractor.__init__()`
 
 ### Enum Refactoring (see ENUM_REFACTORING.md)
 
@@ -619,6 +741,8 @@ Added support for inferring structure from vague prompts:
 
 All validation logic consolidated in `SchemaValidator`:
 - `validate_schema()` for complete schema validation
-- Reduced `SchemaGenerator` by 51% (169 → 82 lines)
-- Better separation of concerns
+- Separation of concerns between schema generation and validation
+- Better maintainability and testability
 - Metadata field support (title, default, examples)
+
+**Note:** With the addition of retry functionality, `SchemaGenerator` is now 143 lines (includes retry loop and error handling).

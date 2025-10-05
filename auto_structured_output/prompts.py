@@ -209,3 +209,60 @@ def get_schema_extraction_messages(prompt: str, use_high_reasoning: bool = False
                 "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE.format(prompt=prompt),
             },
         ]
+
+
+def get_schema_retry_messages(
+    original_prompt: str,
+    previous_schema: dict | None,
+    error_message: str,
+    use_high_reasoning: bool = False,
+) -> list[dict[str, str]]:
+    """Generate messages for schema retry with error feedback
+
+    Args:
+        original_prompt: User's original natural language prompt
+        previous_schema: Previously generated schema that failed validation
+        error_message: Validation error message
+        use_high_reasoning: Whether to use high reasoning mode
+
+    Returns:
+        List of messages including error feedback for retry
+    """
+    import json
+
+    # Start with the original messages
+    messages = get_schema_extraction_messages(original_prompt, use_high_reasoning)
+
+    # Add the previous attempt as assistant response
+    if previous_schema:
+        messages.append(
+            {
+                "role": "assistant",
+                "content": json.dumps(previous_schema, ensure_ascii=False),
+            }
+        )
+
+    # Add error feedback as user message
+    retry_prompt = f"""The previous schema had validation errors. Please fix the schema based on the following error:
+
+**Validation Error:**
+{error_message}
+
+**Instructions:**
+1. Carefully read the error message and identify what went wrong
+2. Fix the specific issue mentioned in the error
+3. Ensure all fields have proper types and constraints
+4. Make sure to set additionalProperties to false
+5. Verify all required fields are listed in the "required" array
+6. Double-check that you're using only supported types and formats
+
+Please generate a corrected JSON Schema that addresses the validation error."""
+
+    messages.append(
+        {
+            "role": "user",
+            "content": retry_prompt,
+        }
+    )
+
+    return messages

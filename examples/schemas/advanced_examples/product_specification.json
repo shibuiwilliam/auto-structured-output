@@ -3,17 +3,17 @@
     "NestedModel": {
       "properties": {
         "length_cm": {
-          "description": "Length in centimeters",
+          "description": "Length in centimeters, minimum 0.1",
           "title": "Length Cm",
           "type": "number"
         },
         "width_cm": {
-          "description": "Width in centimeters",
+          "description": "Width in centimeters, minimum 0.1",
           "title": "Width Cm",
           "type": "number"
         },
         "height_cm": {
-          "description": "Height in centimeters",
+          "description": "Height in centimeters, minimum 0.1",
           "title": "Height Cm",
           "type": "number"
         }
@@ -29,7 +29,7 @@
   },
   "properties": {
     "sku": {
-      "description": "Stock keeping unit",
+      "description": "Stock keeping unit, follows the pattern: [A-Z]{3}-[0-9]{4}",
       "title": "Sku",
       "type": "string"
     },
@@ -39,26 +39,26 @@
       "type": "string"
     },
     "price": {
-      "description": "Price of the product",
+      "description": "Price of the product, ranging from 0.01 to 999999.99",
       "title": "Price",
       "type": "number"
     },
     "stock_quantity": {
-      "description": "Stock quantity available",
+      "description": "Stock quantity, must be 0 or more",
       "title": "Stock Quantity",
       "type": "integer"
     },
     "weight_kg": {
-      "description": "Weight in kilograms",
+      "description": "Weight of the product in kilograms, multiples of 0.01",
       "title": "Weight Kg",
       "type": "number"
     },
     "dimensions": {
       "$ref": "#/$defs/NestedModel",
-      "description": "Product dimensions in centimeters"
+      "description": "Dimensions of the product in cm"
     },
     "tags": {
-      "description": "Product tags",
+      "description": "Product tags, array of strings with 1 to 10 items",
       "items": {
         "type": "string"
       },
