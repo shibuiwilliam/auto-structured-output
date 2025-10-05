@@ -29,6 +29,8 @@ def run(prompt: str, file_name: str):
     )
 
     data = response.choices[0].message.parsed
+    if data is None:
+        raise ValueError("Parsed data is None")
     data_dict = data.model_dump()
     print("\nGenerated data:")
     print(data_dict)
@@ -48,7 +50,7 @@ He prefers the dark theme and has enabled email notifications. Also, he speaks E
 His avatar URL is https://example.com/avatar/johndoe.jpg
 His user ID is user_12345 and username is johndoe.
 In his settings, he has chosen the dark theme, enabled notifications, and set his preferred language to English (en).
-</user_profile>    
+</user_profile>
 
 Output user profile information:
 - user_id
@@ -89,7 +91,7 @@ Views: 1500
 Likes: 300
 Comments Count: 45
 </article>
-       
+
 Output article information:
 - article_id
 - title
@@ -136,7 +138,7 @@ Country: USA
 Total Amount: 1096.99
 Status: shipped
 </order>
-    
+
 The output should be in the following format:
 - order_id
 - customer_name
@@ -205,7 +207,7 @@ CVV: 123
 Status: completed
 Timestamp: 2024-06-10T09:15:00Z
 </payment>
-    
+
 Output payment information:
 - payment_id (string): Unique payment identifier
 - amount (number): Payment amount
@@ -247,7 +249,7 @@ Weight: 15.5 kg
 Dimensions: 123.5 cm x 75.0 cm x 8.0 cm
 Tags: electronics, TV, 4K, UHD
 </product>
-    
+
 Output product specification:
 - sku (string): Stock keeping unit (pattern: [A-Z]{3}-[0-9]{4})
 - name (string): Product name

@@ -1,6 +1,6 @@
 """Module for building Pydantic models from JSON schemas"""
 
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field, create_model
 
@@ -48,7 +48,7 @@ class ModelBuilder:
                 if default_value is ...:
                     default_value = None
                     # Make it Optional type
-                    field_type = field_type | None
+                    field_type = Optional[field_type]  # type: ignore[valid-type, assignment]
 
                 if description:
                     fields[field_name] = (
@@ -59,7 +59,7 @@ class ModelBuilder:
                     fields[field_name] = (field_type, default_value)
 
         # Generate class using create_model
-        model_class = create_model(name, **fields)
+        model_class: type[BaseModel] = create_model(name, **fields)  # type: ignore[call-overload]
 
         return model_class
 
@@ -97,9 +97,9 @@ class ModelBuilder:
             if len(types) == 1:
                 return types[0]
             # Python 3.10+ Union notation
-            result_type = types[0]
+            result_type: type = types[0]
             for t in types[1:]:
-                result_type = result_type | t
+                result_type = result_type | t  # type: ignore[assignment]
             return result_type
 
         # Handle format specification
@@ -135,7 +135,7 @@ class ModelBuilder:
         items_info = field_info["items"]
         item_type = self._get_field_type(items_info)
 
-        return list[item_type]
+        return list[item_type]  # type: ignore[valid-type]
 
     def _handle_object(self, field_info: dict[str, Any]) -> type:
         """Handle object type (nested models)
@@ -167,7 +167,7 @@ class ModelBuilder:
             return str
 
         # Create Literal type
-        return Literal[tuple(enum_values)]
+        return Literal[tuple(enum_values)]  # type: ignore[return-value]
 
     def _handle_any_of(self, any_of_list: list[dict[str, Any]]) -> type:
         """Handle anyOf type
@@ -187,8 +187,8 @@ class ModelBuilder:
             return types[0]
 
         # Create Union type
-        result_type = types[0]
+        result_type: type = types[0]
         for t in types[1:]:
-            result_type = result_type | t
+            result_type = result_type | t  # type: ignore[assignment]
 
         return result_type

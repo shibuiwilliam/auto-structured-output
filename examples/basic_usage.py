@@ -29,6 +29,8 @@ def run(prompt: str, file_name: str):
     )
 
     data = response.choices[0].message.parsed
+    if data is None:
+        raise ValueError("Parsed data is None")
     data_dict = data.model_dump()
     print("\nGenerated data:")
     print(data_dict)
@@ -102,7 +104,7 @@ Rating: 4.2
 Comments: A classic novel of the Jazz Age.
 Reviews: 3500
 </book>
-    
+
 Please output the book information in the following format:
 - title (string, required): Book title
 - author (string, required): Author name
@@ -126,7 +128,7 @@ Instructor: Dr. Smith
 Topics: Programming, Algorithms, Data Structures
 Prerequisites: None
 </course>
-    
+
 Please output the course information in the following format:
 course_id
 title

@@ -31,6 +31,8 @@ def run(prompt: str, file_name: str):
     )
 
     data = response.choices[0].message.parsed
+    if data is None:
+        raise ValueError("Parsed data is None")
     data_dict = data.model_dump()
     print("\nGenerated data:")
     print(data_dict)

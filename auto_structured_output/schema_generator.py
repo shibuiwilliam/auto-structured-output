@@ -109,10 +109,10 @@ class SchemaGenerator:
         Raises:
             ValueError: If API response is invalid
         """
-        response = client.chat.completions.create(
+        response = client.chat.completions.create(  # type: ignore[call-overload]
             model=model,
-            messages=messages,
-            response_format={"type": "json_object"},
+            messages=messages,  # type: ignore[arg-type]
+            response_format={"type": "json_object"},  # type: ignore[typeddict-item]
         )
 
         content = response.choices[0].message.content
