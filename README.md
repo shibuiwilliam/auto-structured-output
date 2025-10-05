@@ -67,12 +67,12 @@ UserModel = extractor.extract_structure("""
 
 ### What you get
 
-✅ **Zero boilerplate** - Describe in plain English, get production-ready models
-✅ **Self-correcting** - Automatically retries and fixes validation errors
-✅ **Type-safe** - Full Pydantic validation with proper Python types
-✅ **Smart inference** - Can figure out structure from vague requirements (using `gpt-5`)
-✅ **Reusable** - Save schemas as JSON, load them later (no API calls)
-✅ **Fast** - Uses `gpt-4o` by default for quick generation
+- ✅ **Zero boilerplate** - Describe in plain English, get production-ready models
+- ✅ **Self-correcting** - Automatically retries and fixes validation errors
+- ✅ **Type-safe** - Full Pydantic validation with proper Python types
+- ✅ **Smart inference** - Can figure out structure from vague requirements (using `gpt-5`)
+- ✅ **Reusable** - Save schemas as JSON, load them later (no API calls)
+- ✅ **Fast** - Uses `gpt-4o` by default for quick generation
 
 ## Installation
 
