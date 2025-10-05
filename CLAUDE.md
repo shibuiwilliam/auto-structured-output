@@ -95,17 +95,17 @@ Structured Outputs supports a subset of the JSON Schema language, defined by the
            │
            │ Valid?
            ├─ No ──────────┐
-           │                │
-           │                ▼
+           │               │
+           │               ▼
            │  ┌──────────────────────────┐
            │  │ Retry with Error Feedback│
            │  │ (max_retries: default 3) │
-           │  └─────────┬────────────────┘
-           │            │
-           │            └──────────────────┐
-           │                               │
-           │ Yes                           │
-           │◄──────────────────────────────┘
+           │  └────────────┬─────────────┘
+           │               │
+           │               │
+           │               │
+           │ Yes           │                   
+           │◄──────────────┘
            ▼
 ┌─────────────────────────────────────────┐
 │  Pydantic Model Builder                 │
