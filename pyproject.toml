@@ -86,3 +86,8 @@ docstring-code-line-length = "dynamic"
 
 [tool.hatch.build.targets.wheel]
 packages = ["auto_structured_output"]
+
+[tool.uv.workspace]
+members = [
+    "ui",
+]

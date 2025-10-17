@@ -84,6 +84,8 @@ cd auto-structured-output
 # Using uv (recommended - handles Python 3.12+ automatically)
 uv sync
 
+uv sync --all-packages
+
 # Or using pip
 pip install -e .
 ```
@@ -264,6 +266,30 @@ except SchemaValidationError as e:
 except ExtractionError as e:
     print(f"Extraction failed: {e}")
 ```
+
+## Streamlit UI
+
+A user-friendly web interface is available for interactive exploration:
+
+```bash
+# Run the Streamlit UI
+cd ui
+streamlit run ui/main.py
+
+# Or use the quick launch script
+./run.sh
+```
+
+**Features:**
+- 🎨 Interactive prompt input with real-time schema extraction
+- 📊 JSON schema visualization
+- 🚀 Test LLM requests with extracted structures
+- ⚙️ Model selection (gpt-4o, gpt-4o-mini, gpt-4.1, gpt-5, etc.)
+- 💾 Download schemas and responses as JSON
+- 🔄 Configurable retry attempts
+- 🧠 High reasoning mode toggle
+
+See `ui/README.md` and `ui/USAGE_GUIDE.md` for detailed documentation.
 
 ## Examples
 

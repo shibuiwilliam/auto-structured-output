@@ -145,6 +145,15 @@ auto-structured-output/
 │   ├── advanced_examples.py     # 6 advanced examples
 │   ├── high_reasoning_examples.py # 6 high reasoning examples
 │   └── schemas/                 # Example schema files
+├── ui/                          # Streamlit web interface
+│   ├── ui/
+│   │   ├── __init__.py
+│   │   └── main.py              # Main Streamlit app (377 lines, refactored)
+│   ├── pyproject.toml           # UI dependencies
+│   ├── README.md                # UI documentation
+│   ├── USAGE_GUIDE.md           # Detailed usage guide
+│   ├── REFACTORING.md           # Code structure documentation
+│   └── run.sh                   # Quick launch script
 ├── pyproject.toml               # Project config with hatchling
 ├── uv.lock
 ├── Makefile
@@ -745,3 +754,130 @@ All validation logic consolidated in `SchemaValidator`:
 - Metadata field support (title, default, examples)
 
 **Note:** With the addition of retry functionality, `SchemaGenerator` is now 143 lines (includes retry loop and error handling).
+
+## Streamlit Web Interface
+
+A professional web-based UI is available in the `ui/` directory for interactive exploration of the library's capabilities.
+
+### Features
+
+- **Interactive Schema Extraction**: Real-time extraction from natural language prompts
+- **JSON Visualization**: Syntax-highlighted display of schemas and responses
+- **Model Selection**: Choose different models for extraction and LLM requests
+  - Basic Prediction Model (gpt-4o, gpt-4o-mini, gpt-4.1, gpt-5, etc.)
+  - High Reasoning Model (for vague prompts)
+  - LLM Request Model (for final API calls)
+- **Configurable Retries**: Slider to adjust retry attempts (1-10)
+- **High Reasoning Mode**: Toggle for structure inference from vague requirements
+- **Download Functionality**: Export schemas and responses as JSON files
+- **Session State**: Persistent state across UI interactions
+
+### Running the UI
+
+```bash
+# From the ui directory
+cd ui
+streamlit run ui/main.py
+
+# Or use the quick launch script
+./run.sh
+
+# Open browser to http://localhost:8501
+```
+
+### UI Architecture (377 lines, well-organized)
+
+The UI follows a clean, function-based architecture:
+
+**Configuration & Setup:**
+- `setup_page_config()` - Streamlit page configuration
+- `render_header()` - Title and description
+- `initialize_session_state()` - Session state initialization
+
+**UI Rendering:**
+- `render_sidebar()` - Configuration panel (returns all settings)
+- `render_structure_extraction_section()` - Section 1: Prompt input
+- `render_schema_display_section()` - Section 2: Schema display
+- `render_llm_request_section()` - Section 3: LLM request
+- `render_llm_response_section()` - Section 4: Response display
+- `render_footer()` - Footer with attribution
+
+**Business Logic:**
+- `handle_structure_extraction()` - Extraction process
+- `handle_llm_request()` - LLM request process
+
+**Entry Point:**
+- `main()` - Orchestrates entire application flow
+
+### UI Workflow
+
+1. **Configure Models** (Sidebar)
+   - Enter OpenAI API key
+   - Select models for different purposes
+   - Adjust retry settings
+   - Toggle high reasoning mode
+
+2. **Extract Structure** (Section 1)
+   - Enter natural language prompt
+   - Click "Extract Structure"
+   - View success indicator
+
+3. **Review Schema** (Section 2)
+   - Visualize generated JSON schema
+   - Download schema for reuse
+
+4. **Request LLM** (Section 3)
+   - Enter prompt for LLM
+   - Click "Request LLM"
+   - View success indicator
+
+5. **View Response** (Section 4)
+   - Visualize structured JSON response
+   - Download response
+
+### UI Dependencies
+
+```toml
+[project]
+name = "ui"
+version = "0.1.0"
+description = "Streamlit UI for Auto Structured Output Library"
+requires-python = ">=3.12.9"
+dependencies = [
+    "click>=8.3.0",
+    "streamlit>=1.50.0",
+    "openai>=2.1.0",
+    "pydantic>=2.11.9",
+]
+```
+
+### UI Code Quality
+
+- ✅ Type hints throughout
+- ✅ Comprehensive docstrings
+- ✅ Separation of concerns (UI vs. business logic)
+- ✅ Error handling with user-friendly messages
+- ✅ Session state management
+- ✅ Professional structure following Python best practices
+
+### UI Documentation
+
+- `ui/README.md` - Installation and basic usage
+- `ui/USAGE_GUIDE.md` - Detailed step-by-step guide with examples
+- `ui/REFACTORING.md` - Code structure and architecture documentation
+
+### Example UI Usage
+
+The UI simplifies the entire workflow:
+1. No code required - just enter prompts
+2. Real-time validation feedback
+3. Visual inspection of schemas
+4. Immediate testing with LLM requests
+5. Easy export of results
+
+Perfect for:
+- 🎓 Learning the library
+- 🧪 Experimenting with prompts
+- 🔍 Debugging schema issues
+- 📊 Demonstrating capabilities
+- 🚀 Rapid prototyping
