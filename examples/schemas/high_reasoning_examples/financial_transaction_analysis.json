@@ -2,148 +2,48 @@
   "$defs": {
     "auto_structured_output__model_builder__NestedModel__1": {
       "properties": {
-        "merchant_id": {
-          "description": "Identifier for the merchant.",
-          "title": "Merchant Id",
+        "service_type": {
+          "description": "Type of service subscribed to.",
+          "title": "Service Type",
           "type": "string"
         },
-        "name": {
-          "description": "Name of the merchant.",
-          "title": "Name",
-          "type": "string"
-        },
-        "industry": {
-          "anyOf": [
-            {
-              "enum": [
-                "retail",
-                "e-commerce",
-                "finance",
-                "hospitality",
-                "travel",
-                "others"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
+        "billing_frequency": {
+          "description": "Frequency of the billing cycle.",
+          "enum": [
+            "monthly",
+            "annually",
+            "weekly"
           ],
-          "default": null,
-          "description": "Industry category of the merchant.",
-          "title": "Industry"
+          "title": "Billing Frequency",
+          "type": "string"
+        },
+        "subscription_amount": {
+          "description": "Amount for the subscription billing cycle.",
+          "title": "Subscription Amount",
+          "type": "number"
         }
       },
       "required": [
-        "merchant_id",
-        "name"
+        "service_type",
+        "billing_frequency",
+        "subscription_amount"
       ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__2": {
       "properties": {
-        "transaction_id": {
-          "description": "Unique identifier for the past transaction.",
-          "title": "Transaction Id",
-          "type": "string"
-        },
-        "timestamp": {
-          "description": "Date and time of the past transaction in UTC.",
-          "format": "date-time",
-          "title": "Timestamp",
-          "type": "string"
-        },
-        "amount": {
-          "description": "Monetary amount for the past transaction.",
-          "title": "Amount",
-          "type": "number"
-        },
-        "currency": {
-          "description": "Currency of the past transaction.",
-          "title": "Currency",
-          "type": "string"
-        }
-      },
-      "required": [
-        "transaction_id",
-        "timestamp",
-        "amount",
-        "currency"
-      ],
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__3": {
-      "properties": {
-        "account_id": {
-          "description": "Unique identifier for the account.",
-          "title": "Account Id",
-          "type": "string"
-        },
-        "verified_status": {
-          "description": "Indicates whether the account has been verified.",
-          "title": "Verified Status",
-          "type": "boolean"
-        },
-        "transaction_history": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
+        "method_type": {
+          "description": "Type of payment method used.",
+          "enum": [
+            "credit_card",
+            "digital_wallet",
+            "bank_transfer"
           ],
-          "default": null,
-          "description": "Array of past transactions associated with the account.",
-          "title": "Transaction History"
-        },
-        "current_balance": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Current monetary balance in the account.",
-          "title": "Current Balance"
-        }
-      },
-      "required": [
-        "account_id",
-        "verified_status"
-      ],
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__4": {
-      "properties": {
-        "ip_address": {
-          "description": "IP address from which the transaction was initiated.",
-          "title": "Ip Address",
+          "title": "Method Type",
           "type": "string"
         },
-        "device_id": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Identifier for the device used for the transaction.",
-          "title": "Device Id"
-        },
-        "location_spoofed": {
+        "card_verification_result": {
           "anyOf": [
             {
               "type": "boolean"
@@ -153,34 +53,116 @@
             }
           ],
           "default": null,
-          "description": "Indicates if the location appears to be spoofed.",
-          "title": "Location Spoofed"
+          "description": "Result of the card verification process.",
+          "title": "Card Verification Result"
+        },
+        "avs_result": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Address Verification System result for the transaction.",
+          "title": "Avs Result"
         }
       },
       "required": [
-        "ip_address"
+        "method_type"
       ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__3": {
+      "properties": {
+        "billing_address": {
+          "description": "Address where billing statements are sent.",
+          "title": "Billing Address",
+          "type": "string"
+        },
+        "shipping_address": {
+          "description": "Address where items are shipped.",
+          "title": "Shipping Address",
+          "type": "string"
+        },
+        "mismatch": {
+          "description": "Indicates if there is a mismatch between billing and shipping addresses.",
+          "title": "Mismatch",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "billing_address",
+        "shipping_address",
+        "mismatch"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
+        "transaction_count_last_hour": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Number of transactions made in the last hour.",
+          "title": "Transaction Count Last Hour"
+        },
+        "transaction_count_last_24h": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Number of transactions made in the last 24 hours.",
+          "title": "Transaction Count Last 24H"
+        }
+      },
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__5": {
       "properties": {
-        "risk_score": {
-          "description": "A quantitative risk score assigned to the transaction.",
-          "title": "Risk Score",
+        "amount": {
+          "description": "Total monetary amount of the transaction.",
+          "title": "Amount",
           "type": "number"
         },
-        "potential_fraud_type": {
+        "currency": {
+          "description": "Currency code of the transaction amount, e.g., USD, EUR.",
+          "title": "Currency",
+          "type": "string"
+        },
+        "merchant": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Name or ID of the merchant involved in the transaction.",
+          "title": "Merchant"
+        },
+        "items_purchased": {
           "anyOf": [
             {
               "items": {
-                "enum": [
-                  "account_takeover",
-                  "money_laundering",
-                  "identity_theft",
-                  "unauthorized_transaction",
-                  "synthetic_identity"
-                ],
                 "type": "string"
               },
               "type": "array"
@@ -190,17 +172,48 @@
             }
           ],
           "default": null,
-          "description": "Array listing potential types of fraud detected.",
-          "title": "Potential Fraud Type"
+          "description": "List of items purchased in the e-commerce transaction.",
+          "title": "Items Purchased"
         },
-        "confidence_level": {
+        "subscription_details": {
           "anyOf": [
             {
-              "enum": [
-                "low",
-                "medium",
-                "high"
-              ],
+              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details related to subscription transactions."
+        },
+        "payment_method": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details of the payment method used in the transaction."
+        },
+        "address_comparison": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Comparison between billing and shipping addresses."
+        },
+        "device_fingerprinting": {
+          "anyOf": [
+            {
               "type": "string"
             },
             {
@@ -208,29 +221,45 @@
             }
           ],
           "default": null,
-          "description": "Confidence level in the risk assessment.",
-          "title": "Confidence Level"
+          "description": "Unique identifier based on the device used for the transaction.",
+          "title": "Device Fingerprinting"
+        },
+        "ip_geolocation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Geolocation data derived from the IP address used for the transaction.",
+          "title": "Ip Geolocation"
+        },
+        "velocity_checks": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Checks for transaction patterns over time."
         }
       },
       "required": [
-        "risk_score"
+        "amount",
+        "currency"
       ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__6": {
       "properties": {
-        "sanctions_check": {
-          "description": "Result of sanctions list screening.",
-          "title": "Sanctions Check",
-          "type": "boolean"
-        },
-        "aml_check": {
-          "description": "Result of anti-money laundering checks.",
-          "title": "Aml Check",
-          "type": "boolean"
-        },
-        "reporting_obligations": {
+        "is_high_risk": {
           "anyOf": [
             {
               "type": "boolean"
@@ -240,32 +269,157 @@
             }
           ],
           "default": null,
-          "description": "Indicates if the transaction meets criteria for regulatory reporting.",
-          "title": "Reporting Obligations"
+          "description": "Overall risk assessment for the transaction.",
+          "title": "Is High Risk"
+        },
+        "risk_factors": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of risk factors identified during transaction analysis.",
+          "title": "Risk Factors"
+        },
+        "merchant_category_risk": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the merchant category poses a higher risk.",
+          "title": "Merchant Category Risk"
+        },
+        "time_of_day_pattern": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Time of day pattern, e.g., unusual hours, that increases risk.",
+          "title": "Time Of Day Pattern"
+        },
+        "user_behavior_consistent": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the transaction is consistent with typical user behavior.",
+          "title": "User Behavior Consistent"
+        },
+        "account_takeover_signals": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Signals of potential account takeover, such as password changes.",
+          "title": "Account Takeover Signals"
         }
       },
-      "required": [
-        "sanctions_check",
-        "aml_check"
-      ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__7": {
       "properties": {
-        "review_required": {
-          "description": "Indicates if human review is needed.",
-          "title": "Review Required",
-          "type": "boolean"
-        },
-        "review_status": {
+        "transfer_size_risk": {
           "anyOf": [
             {
-              "enum": [
-                "not_started",
-                "in_progress",
-                "completed"
-              ],
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if transfer size poses risk relative to account history.",
+          "title": "Transfer Size Risk"
+        },
+        "sanctions_check": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Result of sanctions list screening.",
+          "title": "Sanctions Check"
+        },
+        "pep_identification": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if any party is a politically exposed person.",
+          "title": "Pep Identification"
+        },
+        "regulatory_reporting_requirement": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Indicates if the transaction meets regulatory reporting thresholds.",
+          "title": "Regulatory Reporting Requirement"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__8": {
+      "properties": {
+        "sender_bank_details": {
+          "description": "Details of the sending bank.",
+          "title": "Sender Bank Details",
+          "type": "string"
+        },
+        "recipient_bank_details": {
+          "description": "Details of the receiving bank.",
+          "title": "Recipient Bank Details",
+          "type": "string"
+        },
+        "routing_information": {
+          "anyOf": [
+            {
               "type": "string"
             },
             {
@@ -273,17 +427,12 @@
             }
           ],
           "default": null,
-          "description": "Current status of the manual review process.",
-          "title": "Review Status"
+          "description": "Routing information used for the transfer.",
+          "title": "Routing Information"
         },
-        "review_outcome": {
+        "purpose_code": {
           "anyOf": [
             {
-              "enum": [
-                "approved",
-                "rejected",
-                "additional_information_needed"
-              ],
               "type": "string"
             },
             {
@@ -291,12 +440,26 @@
             }
           ],
           "default": null,
-          "description": "Outcome of the manual review, if conducted.",
-          "title": "Review Outcome"
+          "description": "Code indicating the purpose of the transfer.",
+          "title": "Purpose Code"
+        },
+        "international_transfer": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "True if the transfer is international; false otherwise.",
+          "title": "International Transfer"
         }
       },
       "required": [
-        "review_required"
+        "sender_bank_details",
+        "recipient_bank_details"
       ],
       "title": "NestedModel",
       "type": "object"
@@ -308,66 +471,33 @@
       "title": "Transaction Id",
       "type": "string"
     },
-    "timestamp": {
-      "description": "Date and time when the transaction occurred in UTC.",
-      "format": "date-time",
-      "title": "Timestamp",
-      "type": "string"
-    },
-    "amount": {
-      "description": "The monetary amount of the transaction.",
-      "title": "Amount",
-      "type": "number"
-    },
-    "currency": {
-      "description": "Currency code in which the transaction is made (ISO 4217 format).",
-      "title": "Currency",
-      "type": "string"
-    },
-    "merchant": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
-      "description": "Information about the merchant involved in the transaction."
-    },
-    "payment_method": {
-      "description": "The method by which the payment is made.",
+    "transaction_type": {
+      "description": "Type of transaction being processed.",
       "enum": [
-        "credit_card",
-        "debit_card",
-        "paypal",
-        "bank_transfer",
-        "crypto_currency"
+        "ecommerce",
+        "wire_transfer",
+        "subscription"
       ],
-      "title": "Payment Method",
+      "title": "Transaction Type",
       "type": "string"
     },
-    "transaction_state": {
-      "description": "Current state of the transaction.",
-      "enum": [
-        "pending",
-        "completed",
-        "failed",
-        "under_review"
-      ],
-      "title": "Transaction State",
-      "type": "string"
-    },
-    "account": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3",
-      "description": "Information about the account holder related to the transaction."
-    },
-    "geolocation": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4",
-      "description": "Geographical information about the transaction's origin."
+    "transaction_details": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5",
+      "description": "Details specific to the transaction type."
     },
     "risk_assessment": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5",
-      "description": "Information about the risk assessment of the transaction."
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Risk analysis associated with the transaction."
     },
-    "compliance": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6",
-      "description": "Details related to compliance checks on the transaction."
-    },
-    "review": {
+    "compliance_monitoring": {
       "anyOf": [
         {
           "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
@@ -377,22 +507,26 @@
         }
       ],
       "default": null,
-      "description": "Information regarding manual review processes."
+      "description": "Monitoring details for compliance purposes."
+    },
+    "transfer_details": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__8"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Detailed information specific to wire transfers."
     }
   },
   "required": [
     "transaction_id",
-    "timestamp",
-    "amount",
-    "currency",
-    "merchant",
-    "payment_method",
-    "transaction_state",
-    "account",
-    "geolocation",
-    "risk_assessment",
-    "compliance"
+    "transaction_type",
+    "transaction_details"
   ],
-  "title": "FraudDetectionTransactionModel",
+  "title": "UnifiedFraudDetectionModel",
   "type": "object"
 }

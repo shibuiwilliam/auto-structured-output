@@ -2,205 +2,83 @@
   "$defs": {
     "auto_structured_output__model_builder__NestedModel__1": {
       "properties": {
-        "full_name": {
-          "description": "Full name of the candidate.",
-          "title": "Full Name",
+        "degree": {
+          "description": "Name of the degree obtained.",
+          "title": "Degree",
           "type": "string"
         },
-        "email_address": {
-          "description": "Email address for contacting the candidate.",
-          "title": "Email Address",
+        "institution": {
+          "description": "Name of the educational institution.",
+          "title": "Institution",
           "type": "string"
         },
-        "phone_number": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Phone number for contacting the candidate.",
-          "title": "Phone Number"
-        },
-        "location": {
-          "description": "Current location of the candidate.",
-          "title": "Location",
-          "type": "string"
-        },
-        "willing_to_relocate": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Indicates if the candidate is open to relocating for the job.",
-          "title": "Willing To Relocate"
+        "year_of_graduation": {
+          "description": "Year of graduation.",
+          "title": "Year Of Graduation",
+          "type": "integer"
         }
       },
       "required": [
-        "full_name",
-        "email_address",
-        "location"
+        "degree",
+        "institution",
+        "year_of_graduation"
       ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__2": {
       "properties": {
-        "institution_name": {
-          "description": "Name of the educational institution.",
-          "title": "Institution Name",
+        "role": {
+          "description": "Title of the job or internship position.",
+          "title": "Role",
           "type": "string"
         },
-        "degree": {
-          "description": "Degree obtained by the candidate.",
-          "title": "Degree",
+        "company": {
+          "description": "Company or organization name where the experience was gained.",
+          "title": "Company",
           "type": "string"
         },
-        "field_of_study": {
+        "duration": {
+          "description": "Duration of the work experience in ISO 8601 format.",
+          "title": "Duration",
+          "type": "string"
+        },
+        "major_projects": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Major or field of study of the candidate.",
-          "title": "Field Of Study"
-        },
-        "graduation_year": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Year of graduation.",
-          "title": "Graduation Year"
+          "description": "List of significant projects or tasks completed during this role.",
+          "title": "Major Projects"
         }
       },
       "required": [
-        "institution_name",
-        "degree"
+        "role",
+        "company",
+        "duration"
       ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__3": {
       "properties": {
-        "company_name": {
-          "description": "Name of the company where the candidate was employed.",
-          "title": "Company Name",
-          "type": "string"
-        },
-        "position_title": {
-          "description": "Job title held by the candidate.",
-          "title": "Position Title",
-          "type": "string"
-        },
-        "start_date": {
-          "description": "Date when the candidate started the position.",
-          "format": "date",
-          "title": "Start Date",
-          "type": "string"
-        },
-        "end_date": {
-          "anyOf": [
-            {
-              "format": "date",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Date when the candidate ended the position or null if currently employed.",
-          "title": "End Date"
-        },
-        "technologies_used": {
-          "anyOf": [
-            {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "List of technologies the candidate utilized in this role.",
-          "title": "Technologies Used"
-        },
-        "team_scale": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Size of the team the candidate was involved with.",
-          "title": "Team Scale"
-        },
-        "project_descriptions": {
-          "anyOf": [
-            {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Descriptions of projects the candidate worked on.",
-          "title": "Project Descriptions"
-        }
-      },
-      "required": [
-        "company_name",
-        "position_title",
-        "start_date"
-      ],
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__4": {
-      "properties": {
         "skill_name": {
-          "description": "Name of the programming language, framework, or technology.",
+          "description": "Name of the technical skill.",
           "title": "Skill Name",
           "type": "string"
         },
         "proficiency_level": {
-          "description": "Proficiency level of the candidate in the given skill.",
-          "enum": [
-            "beginner",
-            "intermediate",
-            "advanced",
-            "expert"
-          ],
+          "description": "Proficiency in the skill on a scale of 1-5.",
           "title": "Proficiency Level",
-          "type": "string"
+          "type": "integer"
         }
       },
       "required": [
@@ -210,19 +88,37 @@
       "title": "NestedModel",
       "type": "object"
     },
-    "auto_structured_output__model_builder__NestedModel__5": {
+    "auto_structured_output__model_builder__NestedModel__4": {
       "properties": {
-        "project_name": {
-          "description": "Name or title of the project.",
-          "title": "Project Name",
-          "type": "string"
+        "coding_challenge_score": {
+          "description": "Score of the candidate's coding challenge test.",
+          "title": "Coding Challenge Score",
+          "type": "integer"
         },
-        "role": {
-          "description": "Role of the candidate in the project.",
-          "title": "Role",
-          "type": "string"
+        "behavioral_assessment_score": {
+          "description": "Score from the behavioral interview.",
+          "title": "Behavioral Assessment Score",
+          "type": "integer"
         },
-        "project_url": {
+        "technical_interview_score": {
+          "description": "Score from the technical interview.",
+          "title": "Technical Interview Score",
+          "type": "integer"
+        },
+        "cultural_fit_score": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Assessment of the candidate's cultural fit.",
+          "title": "Cultural Fit Score"
+        },
+        "mentor_feedback": {
           "anyOf": [
             {
               "type": "string"
@@ -232,10 +128,26 @@
             }
           ],
           "default": null,
-          "description": "URL link to the project or its repository (if applicable).",
-          "title": "Project Url"
+          "description": "Feedback provided by the mentor or interviewer.",
+          "title": "Mentor Feedback"
+        }
+      },
+      "required": [
+        "coding_challenge_score",
+        "behavioral_assessment_score",
+        "technical_interview_score"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__5": {
+      "properties": {
+        "title": {
+          "description": "Title of the position held.",
+          "title": "Title",
+          "type": "string"
         },
-        "recognitions": {
+        "achievements": {
           "anyOf": [
             {
               "items": {
@@ -248,20 +160,19 @@
             }
           ],
           "default": null,
-          "description": "Awards or acknowledgments received for the project.",
-          "title": "Recognitions"
+          "description": "Achievements in the role impacting business outcomes.",
+          "title": "Achievements"
         }
       },
       "required": [
-        "project_name",
-        "role"
+        "title"
       ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__6": {
       "properties": {
-        "communication": {
+        "specialty": {
           "anyOf": [
             {
               "type": "string"
@@ -271,102 +182,10 @@
             }
           ],
           "default": null,
-          "description": "Ability of the candidate to communicate effectively.",
-          "title": "Communication"
+          "description": "Domain specialization, e.g., Machine Learning, Security.",
+          "title": "Specialty"
         },
-        "teamwork": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Capacity of the candidate to work collaboratively with others.",
-          "title": "Teamwork"
-        },
-        "leadership": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Experience and ability in leading teams or mentoring individuals.",
-          "title": "Leadership"
-        },
-        "flexibility": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Adaptability of the candidate to changes and new challenges.",
-          "title": "Flexibility"
-        }
-      },
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__7": {
-      "properties": {
-        "technical_strength": {
-          "description": "Technical competency rating of the candidate, on a scale from 1 to 5.",
-          "title": "Technical Strength",
-          "type": "integer"
-        },
-        "alignment_with_needs": {
-          "description": "How well the candidate's experience aligns with the organization's needs.",
-          "title": "Alignment With Needs",
-          "type": "integer"
-        },
-        "growth_potential": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Assessment of the candidate's potential for growth within the company.",
-          "title": "Growth Potential"
-        },
-        "interview_insights": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Additional insights gathered from interviews (if applicable).",
-          "title": "Interview Insights"
-        },
-        "hiring_recommendation": {
-          "description": "Overall recommendation regarding the hiring of the candidate.",
-          "enum": [
-            "strongly_recommend",
-            "recommend",
-            "neutral",
-            "not_recommend"
-          ],
-          "title": "Hiring Recommendation",
-          "type": "string"
-        },
-        "concerns": {
+        "tools_and_technologies": {
           "anyOf": [
             {
               "items": {
@@ -379,98 +198,72 @@
             }
           ],
           "default": null,
-          "description": "Concerns or red flags identified during the evaluation process.",
-          "title": "Concerns"
-        }
-      },
-      "required": [
-        "technical_strength",
-        "alignment_with_needs",
-        "hiring_recommendation"
-      ],
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__8": {
-      "properties": {
-        "source": {
-          "description": "Source where the candidate was discovered (e.g., referral, job board).",
-          "title": "Source",
-          "type": "string"
+          "description": "Tools and technologies used within the specialty.",
+          "title": "Tools And Technologies"
         },
-        "application_date": {
-          "description": "Date when the candidate applied for the position.",
-          "format": "date",
-          "title": "Application Date",
-          "type": "string"
-        },
-        "handler": {
+        "contributions": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Person or team responsible for handling the candidate's application.",
-          "title": "Handler"
-        },
-        "current_stage": {
-          "description": "Current stage of the recruitment process for the candidate.",
-          "title": "Current Stage",
-          "type": "string"
-        },
-        "pipeline_efficiency": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Performance metric on how efficiently the candidate is progressing through the recruitment stages.",
-          "title": "Pipeline Efficiency"
+          "description": "Field contributions like publications or patents.",
+          "title": "Contributions"
         }
       },
-      "required": [
-        "source",
-        "application_date",
-        "current_stage"
-      ],
       "title": "NestedModel",
       "type": "object"
     }
   },
   "properties": {
-    "basic_information": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
-      "description": "Basic personal information and contact details of the candidate."
+    "candidate_id": {
+      "description": "Unique identifier for each candidate.",
+      "title": "Candidate Id",
+      "type": "string"
     },
-    "education": {
-      "description": "Details about the candidate's educational background.",
+    "candidate_name": {
+      "description": "Full name of the candidate.",
+      "title": "Candidate Name",
+      "type": "string"
+    },
+    "application_source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Source from which the candidate applied, such as job board, referral, etc.",
+      "title": "Application Source"
+    },
+    "role_applied_for": {
+      "description": "The software engineering role applied for, e.g., junior engineer, senior engineer, machine learning engineer.",
+      "title": "Role Applied For",
+      "type": "string"
+    },
+    "educational_background": {
+      "description": "List of educational credentials of the candidate.",
       "items": {
-        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
+        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1"
       },
-      "title": "Education",
+      "title": "Educational Background",
       "type": "array"
     },
-    "professional_experience": {
-      "description": "Comprehensive history of the candidate's past professional roles and achievements.",
-      "items": {
-        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
-      },
-      "title": "Professional Experience",
-      "type": "array"
-    },
-    "technical_capabilities": {
+    "work_experience": {
       "anyOf": [
         {
           "items": {
-            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
           },
           "type": "array"
         },
@@ -479,10 +272,62 @@
         }
       ],
       "default": null,
-      "description": "Skills and technologies the candidate is proficient in.",
-      "title": "Technical Capabilities"
+      "description": "Detailed work experience of the candidate, including internships and jobs.",
+      "title": "Work Experience"
     },
-    "project_work": {
+    "personal_projects": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "List of personal or open-source projects undertaken by the candidate.",
+      "title": "Personal Projects"
+    },
+    "technical_skills": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Array of technical skills with confidence levels.",
+      "title": "Technical Skills"
+    },
+    "certifications": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Certifications gained by the candidate relevant to their field.",
+      "title": "Certifications"
+    },
+    "interview_assessments": {
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4",
+      "description": "Evaluation results from various interview stages."
+    },
+    "career_progression": {
       "anyOf": [
         {
           "items": {
@@ -495,10 +340,10 @@
         }
       ],
       "default": null,
-      "description": "Important projects the candidate has contributed to or led.",
-      "title": "Project Work"
+      "description": "Details on career advancement and major roles held.",
+      "title": "Career Progression"
     },
-    "soft_skills": {
+    "domain_specialization": {
       "anyOf": [
         {
           "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
@@ -508,38 +353,16 @@
         }
       ],
       "default": null,
-      "description": "Assessment of the candidate's interpersonal and communications skills."
-    },
-    "evaluation": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Evaluation details and hiring recommendations for the candidate."
-    },
-    "recruitment_process_details": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__8"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Operational details regarding the candidate's recruitment process."
+      "description": "Specialized domain details if applicable."
     }
   },
   "required": [
-    "basic_information",
-    "education",
-    "professional_experience"
+    "candidate_id",
+    "candidate_name",
+    "role_applied_for",
+    "educational_background",
+    "interview_assessments"
   ],
-  "title": "SoftwareEngineeringCandidateProfile",
+  "title": "UnifiedHiringEvaluationModel",
   "type": "object"
 }

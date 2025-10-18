@@ -144,6 +144,7 @@ auto-structured-output/
 │   ├── basic_usage.py           # 5 basic examples
 │   ├── advanced_examples.py     # 6 advanced examples
 │   ├── high_reasoning_examples.py # 6 high reasoning examples
+│   ├── multi_prompt_examples.py # 7 multi-prompt unified schema examples
 │   └── schemas/                 # Example schema files
 ├── ui/                          # Streamlit web interface
 │   ├── ui/
@@ -167,7 +168,7 @@ auto-structured-output/
 
 ### 1. StructureExtractor Class (`extractor.py`)
 
-Main class for extracting structure from natural language prompts with two modes.
+Main class for extracting structure from natural language prompts with two modes and support for multi-prompt unified schemas.
 
 ```python
 from auto_structured_output.extractor import StructureExtractor
@@ -177,14 +178,22 @@ from openai import OpenAI
 client = OpenAI(api_key="your-api-key")
 extractor = StructureExtractor(client, max_retries=3)  # Default: 3 retry attempts
 
-# Standard mode (clear structure) - uses gpt-4o by default
-UserModel = extractor.extract_structure(
+# Single prompt - standard mode (clear structure) - uses gpt-4o by default
+UserModel = extractor.extract_structure([
     "Extract user information with name (string), age (integer), and email (string with email format)"
-)
+])
+
+# Multiple prompts - unified schema covering all use cases
+ProfileModel = extractor.extract_structure([
+    "Extract basic user profile with name and email",
+    "Extract admin profile with name, email, and role",
+    "Extract premium user with name, email, subscription tier, and expiry date"
+])
+# Generates a single schema with all fields (some optional)
 
 # High reasoning mode (vague/unclear structure) - uses gpt-5 by default
 InsightModel = extractor.extract_structure(
-    "Analyze customer feedback and extract actionable insights",
+    ["Analyze customer feedback and extract actionable insights"],
     use_high_reasoning=True
 )
 

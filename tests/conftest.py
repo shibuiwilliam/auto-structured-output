@@ -1,6 +1,7 @@
 """Pytest configuration and fixtures"""
 
 import json
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,14 +9,14 @@ from openai import OpenAI
 
 
 @pytest.fixture
-def mock_openai_client():
+def mock_openai_client() -> MagicMock:
     """Create a mock OpenAI client"""
     client = MagicMock(spec=OpenAI)
     return client
 
 
 @pytest.fixture
-def sample_user_schema():
+def sample_user_schema() -> dict[str, object]:
     """Sample user schema for testing"""
     return {
         "type": "object",
@@ -35,7 +36,7 @@ def sample_user_schema():
 
 
 @pytest.fixture
-def sample_nested_schema():
+def sample_nested_schema() -> dict[str, object]:
     """Sample nested schema for testing"""
     return {
         "type": "object",
@@ -60,7 +61,7 @@ def sample_nested_schema():
 
 
 @pytest.fixture
-def sample_array_schema():
+def sample_array_schema() -> dict[str, object]:
     """Sample schema with array fields"""
     return {
         "type": "object",
@@ -79,7 +80,7 @@ def sample_array_schema():
 
 
 @pytest.fixture
-def sample_enum_schema():
+def sample_enum_schema() -> dict[str, object]:
     """Sample schema with enum field"""
     return {
         "type": "object",
@@ -98,7 +99,7 @@ def sample_enum_schema():
 
 
 @pytest.fixture
-def temp_schema_file(tmp_path, sample_user_schema):
+def temp_schema_file(tmp_path: Path, sample_user_schema: dict[str, object]) -> Path:
     """Create a temporary schema file"""
     schema_file = tmp_path / "test_schema.json"
     with open(schema_file, "w") as f:
@@ -107,10 +108,10 @@ def temp_schema_file(tmp_path, sample_user_schema):
 
 
 @pytest.fixture
-def mock_openai_response():
+def mock_openai_response() -> object:
     """Mock OpenAI API response"""
 
-    def _create_response(schema_dict):
+    def _create_response(schema_dict: dict[str, object]) -> MagicMock:
         mock_response = MagicMock()
         mock_response.choices[0].message.content = json.dumps(schema_dict)
         return mock_response

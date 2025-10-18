@@ -1,5 +1,7 @@
 """Tests for ModelBuilder"""
 
+from typing import Any
+
 import pytest
 from pydantic import BaseModel
 
@@ -9,7 +11,7 @@ from auto_structured_output.model_builder import ModelBuilder
 class TestModelBuilder:
     """Test suite for ModelBuilder class"""
 
-    def test_build_simple_model(self, sample_user_schema):
+    def test_build_simple_model(self: Any, sample_user_schema: Any) -> None:
         """Test building a simple model"""
         builder = ModelBuilder()
         UserModel = builder.build_model(sample_user_schema)
@@ -20,7 +22,7 @@ class TestModelBuilder:
         assert "age" in UserModel.model_fields
         assert "email" in UserModel.model_fields
 
-    def test_build_model_invalid_type(self):
+    def test_build_model_invalid_type(self: Any) -> None:
         """Test building fails with invalid top-level type"""
         builder = ModelBuilder()
         schema = {"type": "string", "properties": {}}
@@ -28,7 +30,7 @@ class TestModelBuilder:
         with pytest.raises(ValueError, match="must be of type 'object'"):
             builder.build_model(schema)
 
-    def test_build_nested_model(self, sample_nested_schema):
+    def test_build_nested_model(self: Any, sample_nested_schema: Any) -> None:
         """Test building a model with nested objects"""
         builder = ModelBuilder()
         ProfileModel = builder.build_model(sample_nested_schema)
@@ -40,9 +42,10 @@ class TestModelBuilder:
         # Check nested model
         profile_field = ProfileModel.model_fields["profile"]
         nested_type = profile_field.annotation
+        assert nested_type is not None
         assert issubclass(nested_type, BaseModel)
 
-    def test_build_array_model(self, sample_array_schema):
+    def test_build_array_model(self: Any, sample_array_schema: Any) -> None:
         """Test building a model with array fields"""
         builder = ModelBuilder()
         CourseModel = builder.build_model(sample_array_schema)
@@ -53,7 +56,7 @@ class TestModelBuilder:
         # Verify it's a list type
         assert "list" in str(topics_field.annotation).lower()
 
-    def test_build_enum_model(self, sample_enum_schema):
+    def test_build_enum_model(self: Any, sample_enum_schema: Any) -> None:
         """Test building a model with enum fields"""
         builder = ModelBuilder()
         ProductModel = builder.build_model(sample_enum_schema)
@@ -63,7 +66,7 @@ class TestModelBuilder:
         status_field = ProductModel.model_fields["status"]
         assert "Literal" in str(status_field.annotation)
 
-    def test_build_model_with_formats(self):
+    def test_build_model_with_formats(self: Any) -> None:
         """Test building model with format specifications"""
         builder = ModelBuilder()
         schema = {
@@ -96,7 +99,7 @@ class TestModelBuilder:
         date_field = EventModel.model_fields["event_date"]
         assert "date" in str(date_field.annotation).lower()
 
-    def test_build_model_with_optional_fields(self):
+    def test_build_model_with_optional_fields(self: Any) -> None:
         """Test building model with optional fields"""
         builder = ModelBuilder()
         schema = {
@@ -119,7 +122,7 @@ class TestModelBuilder:
         assert title_field.is_required()
         assert not isbn_field.is_required()
 
-    def test_build_model_with_default_values(self):
+    def test_build_model_with_default_values(self: Any) -> None:
         """Test building model with default values"""
         builder = ModelBuilder()
         schema = {
@@ -142,7 +145,7 @@ class TestModelBuilder:
         setting_value_field = ConfigModel.model_fields["setting_value"]
         assert setting_value_field.default == "default_value"
 
-    def test_build_model_with_number_types(self):
+    def test_build_model_with_number_types(self: Any) -> None:
         """Test building model with number and integer types"""
         builder = ModelBuilder()
         schema = {
@@ -164,7 +167,7 @@ class TestModelBuilder:
         assert "int" in str(count_field.annotation)
         assert "float" in str(percentage_field.annotation)
 
-    def test_build_model_with_boolean(self):
+    def test_build_model_with_boolean(self: Any) -> None:
         """Test building model with boolean type"""
         builder = ModelBuilder()
         schema = {
@@ -180,14 +183,14 @@ class TestModelBuilder:
         is_active_field = FlagModel.model_fields["is_active"]
         assert "bool" in str(is_active_field.annotation)
 
-    def test_build_model_custom_name(self, sample_user_schema):
+    def test_build_model_custom_name(self: Any, sample_user_schema: Any) -> None:
         """Test building model with custom name"""
         builder = ModelBuilder()
         CustomModel = builder.build_model(sample_user_schema, model_name="CustomName")
 
         assert CustomModel.__name__ == "CustomName"
 
-    def test_build_model_array_of_objects(self):
+    def test_build_model_array_of_objects(self: Any) -> None:
         """Test building model with array of objects"""
         builder = ModelBuilder()
         schema = {

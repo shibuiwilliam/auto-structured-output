@@ -106,9 +106,10 @@ from openai import OpenAI
 client = OpenAI()
 extractor = StructureExtractor(client)
 
-# Describe what you want in natural language
-prompt = "Extract user with name, age, and email address"
-UserModel = extractor.extract_structure(prompt)
+# Describe what you want in natural language (wrapped in a list)
+UserModel = extractor.extract_structure([
+    "Extract user with name, age, and email address"
+])
 
 # Use it with OpenAI
 response = client.chat.completions.create(
@@ -129,14 +130,47 @@ When you know exactly what fields you need:
 
 ```python
 # Explicit structure
-ProductModel = extractor.extract_structure("""
+ProductModel = extractor.extract_structure(["""
     Extract product with:
     - id (string)
     - name (string)
     - price (positive number)
     - in_stock (boolean)
     - categories (array of strings)
-""")
+"""])
+```
+
+### 1.5. Multiple Prompts (Unified Schema)
+
+When you need a single schema that works for multiple related use cases:
+
+```python
+# Generate unified schema from multiple prompts
+ProfileModel = extractor.extract_structure([
+    "Extract basic user profile with name and email",
+    "Extract admin profile with name, email, and role",
+    "Extract premium user with name, email, subscription tier, and expiry date"
+])
+
+# The resulting schema includes all fields:
+# - name (required)
+# - email (required)
+# - role (optional)
+# - subscription_tier (optional)
+# - expiry_date (optional)
+
+# Works for all user types
+basic_user = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Generate basic user: John Doe"}],
+    response_format=ProfileModel
+).choices[0].message.parsed
+
+admin_user = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Generate admin: Jane Smith, role: administrator"}],
+    response_format=ProfileModel
+).choices[0].message.parsed
 ```
 
 ### 2. Vague Requirements (High Reasoning Mode)
@@ -146,7 +180,7 @@ When you're not sure what fields you need, let AI figure it out:
 ```python
 # Just describe the intent - AI infers the structure
 FeedbackModel = extractor.extract_structure(
-    "Analyze customer feedback and extract actionable insights",
+    ["Analyze customer feedback and extract actionable insights"],
     use_high_reasoning=True  # Uses gpt-5 for deep reasoning
 )
 
@@ -163,21 +197,21 @@ FeedbackModel = extractor.extract_structure(
 ### 3. Complex Nested Structures
 
 ```python
-OrderModel = extractor.extract_structure("""
+OrderModel = extractor.extract_structure(["""
     Extract order with:
     - order_id (string)
     - customer (name, email, phone)
     - items (array of: product_id, quantity, price)
     - shipping_address (street, city, zip, country)
     - total_amount (number)
-""")
+"""])
 ```
 
 ### 4. Save & Reuse Schemas
 
 ```python
 # Extract once
-UserModel = extractor.extract_structure("Extract user with name and email")
+UserModel = extractor.extract_structure(["Extract user with name and email"])
 
 # Save for later (no API calls needed to reload)
 StructureExtractor.save_extracted_json(UserModel, "user_schema.json")
@@ -299,6 +333,7 @@ Check out the `examples/` directory:
 python examples/basic_usage.py              # 5 simple examples
 python examples/advanced_examples.py        # 6 complex structures
 python examples/high_reasoning_examples.py  # 6 vague requirement examples
+python examples/multi_prompt_examples.py    # 7 multi-prompt unified schema examples
 ```
 
 ## How It Works

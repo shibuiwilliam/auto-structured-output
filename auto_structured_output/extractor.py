@@ -43,17 +43,23 @@ class StructureExtractor:
         self.schema_generator = SchemaGenerator(max_retries=max_retries)
         self.model_builder = ModelBuilder()
 
-    def extract_structure(self, prompt: str, use_high_reasoning: bool = False) -> type[BaseModel]:
-        """Extract structure from prompt and return Pydantic model
+    def extract_structure(
+        self,
+        prompts: list[str],
+        use_high_reasoning: bool = False,
+    ) -> type[BaseModel]:
+        """Extract structure from prompt(s) and return Pydantic model
 
         Args:
-            prompt: Natural language prompt describing the output format
+            prompts: List of natural language prompts describing the output format(s).
+                    Single prompt should be wrapped in a list: ["your prompt"].
+                    Multiple prompts will generate a unified schema that accommodates all prompts.
             use_high_reasoning: If True, use gpt-5 with enhanced reasoning to infer
                               optimal structure from unclear prompts. If False (default),
                               use gpt-4o for prompts with clearly defined structure.
 
         Returns:
-            Class inheriting from pydantic.BaseModel
+            Class inheriting from pydantic.BaseModel that covers all provided prompts
 
         Raises:
             ExtractionError: If structure extraction fails
@@ -61,21 +67,27 @@ class StructureExtractor:
             ModelBuildError: If model building fails
 
         Examples:
-            >>> # Standard mode - clearly defined structure
-            >>> UserModel = extractor.extract_structure(
+            >>> # Single prompt - standard mode
+            >>> UserModel = extractor.extract_structure([
             ...     "Extract user with name (string), age (integer), email (email format)"
-            ... )
+            ... ])
+
+            >>> # Multiple prompts - unified schema
+            >>> ProfileModel = extractor.extract_structure([
+            ...     "Extract user profile with name and email",
+            ...     "Extract admin profile with name, email, and role"
+            ... ])
+            >>> # Returns schema with name, email, and optional role field
 
             >>> # High reasoning mode - infer structure from context
             >>> AnalysisModel = extractor.extract_structure(
-            ...     "Analyze this customer feedback and extract key insights",
+            ...     ["Analyze this customer feedback and extract key insights"],
             ...     use_high_reasoning=True
             ... )
         """
-
         try:
             # 1. Extract structure using OpenAI
-            schema_json = self._extract_schema_from_prompt(prompt, use_high_reasoning)
+            schema_json = self._extract_schema_from_prompt(prompts, use_high_reasoning)
 
             # 2. Validate JSON schema
             validated_schema = self._validate_schema(schema_json)
@@ -150,11 +162,11 @@ class StructureExtractor:
         except Exception as e:
             raise ModelBuildError(f"Failed to build model: {e}") from e
 
-    def _extract_schema_from_prompt(self, prompt: str, use_high_reasoning: bool = False) -> dict[str, Any]:
+    def _extract_schema_from_prompt(self, prompts: list[str], use_high_reasoning: bool = False) -> dict[str, Any]:
         """Extract JSON schema from prompt (internal method)
 
         Args:
-            prompt: Natural language prompt
+            prompts: Natural language prompt
             use_high_reasoning: Whether to use high reasoning mode
 
         Returns:
@@ -165,7 +177,7 @@ class StructureExtractor:
             ExtractionError: If schema extraction fails
         """
         try:
-            return self.schema_generator.extract_from_prompt(prompt, self.client, use_high_reasoning)
+            return self.schema_generator.extract_from_prompt(prompts, self.client, use_high_reasoning)
         except ValueError as e:
             # If it's a validation error that persisted after retries, wrap it as SchemaValidationError
             if "Failed to generate valid schema" in str(e):

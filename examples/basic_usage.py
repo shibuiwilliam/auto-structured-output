@@ -15,8 +15,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 extractor = StructureExtractor(client)
 
 
-def run(prompt: str, file_name: str):
-    T_Model = extractor.extract_structure(prompt)
+def run(prompt: str, file_name: str) -> None:
+    T_Model = extractor.extract_structure([prompt])
 
     print(f"Generated model: {T_Model.__name__}")
     print(f"Fields: {T_Model.model_json_schema()}")
@@ -38,7 +38,7 @@ def run(prompt: str, file_name: str):
     extractor.save_extracted_json(T_Model, file_name)
 
 
-def example_1_simple_user_model():
+def example_1_simple_user_model() -> None:
     """Example 1: Extract a simple user model"""
     print("\n=== Example 1: Simple User Model ===")
 
@@ -68,7 +68,7 @@ Please output the user information in the following format:
     run(prompt, "examples/schemas/basic_usages/simple_user_model.json")
 
 
-def example_2_product_with_enum():
+def example_2_product_with_enum() -> None:
     """Example 2: Product model with enum status"""
     print("\n=== Example 2: Product with Enum Status ===")
 
@@ -90,7 +90,7 @@ Please output the product information in the following format:
     run(prompt, "examples/schemas/basic_usages/product_with_enum.json")
 
 
-def example_3_optional_fields():
+def example_3_optional_fields() -> None:
     """Example 3: Model with optional fields"""
     print("\n=== Example 3: Optional Fields ===")
 
@@ -116,7 +116,7 @@ Please output the book information in the following format:
     run(prompt, "examples/schemas/basic_usages/book_with_optional_fields.json")
 
 
-def example_4_array_fields():
+def example_4_array_fields() -> None:
     """Example 4: Model with array fields"""
     print("\n=== Example 4: Array Fields ===")
 
@@ -140,7 +140,7 @@ prerequisites
     run(prompt, "examples/schemas/basic_usages/course_with_array_fields.json")
 
 
-def example_5_datetime_fields():
+def example_5_datetime_fields() -> None:
     """Example 5: Model with date-time fields"""
     print("\n=== Example 5: DateTime Fields ===")
 

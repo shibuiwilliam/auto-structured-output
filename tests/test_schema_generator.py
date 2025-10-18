@@ -1,5 +1,7 @@
 """Tests for SchemaGenerator"""
 
+from typing import Any
+
 import pytest
 
 from auto_structured_output.schema_generator import SchemaGenerator
@@ -8,19 +10,21 @@ from auto_structured_output.schema_generator import SchemaGenerator
 class TestSchemaGenerator:
     """Test suite for SchemaGenerator class"""
 
-    def test_extract_from_prompt(self, mock_openai_client, sample_user_schema, mock_openai_response):
+    def test_extract_from_prompt(
+        self: Any, mock_openai_client: Any, sample_user_schema: Any, mock_openai_response: Any
+    ) -> None:
         """Test extracting schema from prompt"""
         generator = SchemaGenerator()
 
         # Mock the OpenAI response
         mock_openai_client.chat.completions.create.return_value = mock_openai_response(sample_user_schema)
 
-        result = generator.extract_from_prompt("test prompt", mock_openai_client)
+        result = generator.extract_from_prompt(["test prompt"], mock_openai_client)
 
         assert result == sample_user_schema
         mock_openai_client.chat.completions.create.assert_called_once()
 
-    def test_extract_from_prompt_empty_response(self, mock_openai_client):
+    def test_extract_from_prompt_empty_response(self: Any, mock_openai_client: Any) -> None:
         """Test handling empty response from OpenAI"""
         generator = SchemaGenerator()
 
@@ -33,9 +37,9 @@ class TestSchemaGenerator:
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         with pytest.raises(ValueError, match="Response from OpenAI API is empty"):
-            generator.extract_from_prompt("test prompt", mock_openai_client)
+            generator.extract_from_prompt(["test prompt"], mock_openai_client)
 
-    def test_extract_from_prompt_invalid_json(self, mock_openai_client):
+    def test_extract_from_prompt_invalid_json(self: Any, mock_openai_client: Any) -> None:
         """Test handling invalid JSON response"""
         generator = SchemaGenerator()
 
@@ -48,15 +52,15 @@ class TestSchemaGenerator:
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         with pytest.raises(ValueError, match="not valid JSON"):
-            generator.extract_from_prompt("test prompt", mock_openai_client)
+            generator.extract_from_prompt(["test prompt"], mock_openai_client)
 
-    def test_validate_schema_valid(self, sample_user_schema):
+    def test_validate_schema_valid(self: Any, sample_user_schema: Any) -> None:
         """Test validating a valid schema"""
         generator = SchemaGenerator()
         result = generator.validate_schema(sample_user_schema)
         assert result == sample_user_schema
 
-    def test_validate_schema_missing_type(self):
+    def test_validate_schema_missing_type(self: Any) -> None:
         """Test validation fails when type is missing"""
         generator = SchemaGenerator()
         schema = {"properties": {"name": {"type": "string"}}}
@@ -64,7 +68,7 @@ class TestSchemaGenerator:
         with pytest.raises(ValueError, match="must have a 'type' field"):
             generator.validate_schema(schema)
 
-    def test_validate_schema_invalid_type(self):
+    def test_validate_schema_invalid_type(self: Any) -> None:
         """Test validation fails when type is not 'object'"""
         generator = SchemaGenerator()
         schema = {"type": "string", "properties": {}}
@@ -72,7 +76,7 @@ class TestSchemaGenerator:
         with pytest.raises(ValueError, match="must be of type 'object'"):
             generator.validate_schema(schema)
 
-    def test_validate_schema_missing_properties(self):
+    def test_validate_schema_missing_properties(self: Any) -> None:
         """Test validation fails when properties are missing"""
         generator = SchemaGenerator()
         schema = {"type": "object"}
@@ -80,7 +84,7 @@ class TestSchemaGenerator:
         with pytest.raises(ValueError, match="must have a 'properties' field"):
             generator.validate_schema(schema)
 
-    def test_validate_schema_invalid_required(self):
+    def test_validate_schema_invalid_required(self: Any) -> None:
         """Test validation fails when required field is not a list"""
         generator = SchemaGenerator()
         schema = {
@@ -92,7 +96,7 @@ class TestSchemaGenerator:
         with pytest.raises(ValueError, match="must be a list"):
             generator.validate_schema(schema)
 
-    def test_validate_schema_required_field_not_in_properties(self):
+    def test_validate_schema_required_field_not_in_properties(self: Any) -> None:
         """Test validation fails when required field is not defined"""
         generator = SchemaGenerator()
         schema = {
@@ -104,7 +108,7 @@ class TestSchemaGenerator:
         with pytest.raises(ValueError, match="not defined in properties"):
             generator.validate_schema(schema)
 
-    def test_validate_properties_unsupported_type(self):
+    def test_validate_properties_unsupported_type(self: Any) -> None:
         """Test validation fails with unsupported type"""
         generator = SchemaGenerator()
         schema = {
@@ -115,19 +119,19 @@ class TestSchemaGenerator:
         with pytest.raises(ValueError, match="not supported"):
             generator.validate_schema(schema)
 
-    def test_validate_nested_object(self, sample_nested_schema):
+    def test_validate_nested_object(self: Any, sample_nested_schema: Any) -> None:
         """Test validating nested object schema"""
         generator = SchemaGenerator()
         result = generator.validate_schema(sample_nested_schema)
         assert result == sample_nested_schema
 
-    def test_validate_array_schema(self, sample_array_schema):
+    def test_validate_array_schema(self: Any, sample_array_schema: Any) -> None:
         """Test validating array schema"""
         generator = SchemaGenerator()
         result = generator.validate_schema(sample_array_schema)
         assert result == sample_array_schema
 
-    def test_validate_anyof_invalid(self):
+    def test_validate_anyof_invalid(self: Any) -> None:
         """Test validation fails when anyOf is not a list"""
         generator = SchemaGenerator()
         schema = {

@@ -2,99 +2,153 @@
   "$defs": {
     "auto_structured_output__model_builder__NestedModel__1": {
       "properties": {
-        "title": {
-          "description": "Full title of the paper.",
-          "title": "Title",
+        "full_title": {
+          "description": "The complete title of the paper.",
+          "title": "Full Title",
           "type": "string"
         },
         "subtitle": {
           "default": "",
-          "description": "Subtitle of the paper if present.",
+          "description": "The subtitle of the paper, if applicable.",
           "title": "Subtitle",
           "type": "string"
         },
         "publication_date": {
-          "description": "Date when the paper was published.",
+          "description": "The publication date of the paper.",
           "format": "date",
           "title": "Publication Date",
           "type": "string"
         },
-        "journal_conference_name": {
-          "description": "Name of the journal or conference where the paper was published.",
-          "title": "Journal Conference Name",
+        "journal_or_conference_name": {
+          "description": "The name of the journal or conference where the paper was published.",
+          "title": "Journal Or Conference Name",
           "type": "string"
         },
         "volume": {
           "default": "",
-          "description": "Volume number of the journal issue.",
+          "description": "The volume number of the journal issue.",
           "title": "Volume",
           "type": "string"
         },
         "issue": {
           "default": "",
-          "description": "Issue number of the journal.",
+          "description": "The issue number of the journal.",
           "title": "Issue",
           "type": "string"
         },
         "page_numbers": {
           "default": "",
-          "description": "Page range in which the paper appears in the journal.",
+          "description": "The page range of the published paper.",
           "title": "Page Numbers",
           "type": "string"
         },
         "doi": {
-          "description": "Digital Object Identifier of the paper.",
+          "default": "",
+          "description": "Digital Object Identifier for the paper.",
           "title": "Doi",
           "type": "string"
         },
         "isbn_issn": {
           "default": "",
-          "description": "ISBN for books or ISSN for journals.",
+          "description": "ISBN or ISSN of the publication.",
           "title": "Isbn Issn",
           "type": "string"
         },
         "publisher": {
-          "description": "Name of the publisher of the paper.",
+          "default": "",
+          "description": "The publisher of the paper.",
           "title": "Publisher",
           "type": "string"
         },
         "publication_status": {
-          "anyOf": [
-            {
-              "enum": [
-                "preprint",
-                "published",
-                "in review"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
+          "default": "published",
+          "description": "The current publication status of the paper.",
+          "enum": [
+            "preprint",
+            "published",
+            "in review"
           ],
-          "default": null,
-          "description": "Current publication status of the paper.",
-          "title": "Publication Status"
+          "title": "Publication Status",
+          "type": "string"
         }
       },
       "required": [
-        "title",
+        "full_title",
         "publication_date",
-        "journal_conference_name",
-        "doi",
-        "publisher"
+        "journal_or_conference_name"
       ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__10": {
       "properties": {
-        "download_count": {
-          "description": "Total download count.",
-          "title": "Download Count",
-          "type": "integer"
+        "funding_sources": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Entities that provided funding for the research.",
+          "title": "Funding Sources"
         },
-        "unique_downloads": {
+        "grant_numbers": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Grant numbers associated with the funding.",
+          "title": "Grant Numbers"
+        },
+        "conflict_of_interest_statements": {
+          "default": "",
+          "description": "Statements regarding conflicts of interest.",
+          "title": "Conflict Of Interest Statements",
+          "type": "string"
+        },
+        "ethics_approval_numbers": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ethics approval numbers for the study.",
+          "title": "Ethics Approval Numbers"
+        },
+        "data_availability_statements": {
+          "default": "",
+          "description": "Statements about the availability of research data.",
+          "title": "Data Availability Statements",
+          "type": "string"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__11": {
+      "properties": {
+        "citation_count": {
           "anyOf": [
             {
               "type": "integer"
@@ -104,22 +158,8 @@
             }
           ],
           "default": null,
-          "description": "Unique download counts.",
-          "title": "Unique Downloads"
-        }
-      },
-      "required": [
-        "download_count"
-      ],
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__11": {
-      "properties": {
-        "citation_count": {
-          "description": "Number of times the paper has been cited.",
-          "title": "Citation Count",
-          "type": "integer"
+          "description": "Total number of times the paper has been cited.",
+          "title": "Citation Count"
         },
         "h_index_relevance": {
           "anyOf": [
@@ -131,96 +171,127 @@
             }
           ],
           "default": null,
-          "description": "Relevance of the paper to the author's h-index.",
+          "description": "The H-index relevance of the paper.",
           "title": "H Index Relevance"
         },
-        "altmetric_scores": {
-          "default": [],
-          "description": "Alternative metrics evaluating the paper's impact.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Altmetric Scores",
-          "type": "array"
-        },
-        "download_statistics": {
+        "altmetrics": {
           "anyOf": [
             {
-              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__10"
+              "type": "integer"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Statistics on paper downloads."
+          "description": "Alternative metrics like Altmetric score.",
+          "title": "Altmetrics"
+        },
+        "download_statistics": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Number of times the paper has been downloaded.",
+          "title": "Download Statistics"
         },
         "social_media_mentions": {
-          "default": [],
-          "description": "Mentions of the paper on social media platforms.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Social Media Mentions",
-          "type": "array"
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Count of social media mentions for the paper.",
+          "title": "Social Media Mentions"
         }
       },
-      "required": [
-        "citation_count"
-      ],
       "title": "NestedModel",
       "type": "object"
     },
     "auto_structured_output__model_builder__NestedModel__12": {
       "properties": {
         "version_history": {
-          "default": [],
-          "description": "History of versions for the paper.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Version History",
-          "type": "array"
-        },
-        "preprint_versions": {
-          "default": [],
-          "description": "Details on the preprint versions.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Preprint Versions",
-          "type": "array"
-        },
-        "amendments": {
-          "default": [],
-          "description": "List of amendments made to the paper.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Amendments",
-          "type": "array"
-        },
-        "errata": {
-          "default": [],
-          "description": "Errata information if applicable.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Errata",
-          "type": "array"
-        },
-        "retraction_status": {
           "anyOf": [
             {
-              "type": "boolean"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Indicates if the paper has been retracted.",
-          "title": "Retraction Status"
+          "description": "History of all versions of the paper.",
+          "title": "Version History"
+        },
+        "preprint_versions": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Links to preprint versions of the paper.",
+          "title": "Preprint Versions"
+        },
+        "amendments": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Details on any amendments made to the paper.",
+          "title": "Amendments"
+        },
+        "errata": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Any issued errata for the paper.",
+          "title": "Errata"
+        },
+        "retraction_status": {
+          "default": "not retracted",
+          "description": "Information if the paper has been retracted.",
+          "enum": [
+            "not retracted",
+            "retracted"
+          ],
+          "title": "Retraction Status",
+          "type": "string"
         }
       },
       "title": "NestedModel",
@@ -229,15 +300,22 @@
     "auto_structured_output__model_builder__NestedModel__2": {
       "properties": {
         "institution": {
-          "description": "Institution name.",
+          "description": "Name of the institution.",
           "title": "Institution",
           "type": "string"
         },
         "department": {
-          "default": "",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Department within the institution.",
-          "title": "Department",
-          "type": "string"
+          "title": "Department"
         },
         "country": {
           "description": "Country of the institution.",
@@ -254,13 +332,27 @@
     },
     "auto_structured_output__model_builder__NestedModel__3": {
       "properties": {
+        "email": {
+          "description": "Email address of the author.",
+          "title": "Email",
+          "type": "string"
+        }
+      },
+      "required": [
+        "email"
+      ],
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__4": {
+      "properties": {
         "full_name": {
           "description": "Full name of the author.",
           "title": "Full Name",
           "type": "string"
         },
         "affiliations": {
-          "description": "List of affiliations of the author.",
+          "description": "List of affiliations, including institution, department, and country.",
           "items": {
             "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__2"
           },
@@ -269,7 +361,7 @@
         },
         "orcid": {
           "default": "",
-          "description": "ORCID identifier of the author.",
+          "description": "ORCID identifier for the author.",
           "title": "Orcid",
           "type": "string"
         },
@@ -287,16 +379,28 @@
           "title": "Is Corresponding Author"
         },
         "contribution": {
-          "default": "",
-          "description": "Description of author's contributions to the paper.",
-          "title": "Contribution",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Statement of the author's contributions to the paper.",
+          "title": "Contribution"
         },
         "contact_information": {
-          "default": "",
-          "description": "Contact email of the author.",
-          "title": "Contact Information",
-          "type": "string"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -306,7 +410,7 @@
       "title": "NestedModel",
       "type": "object"
     },
-    "auto_structured_output__model_builder__NestedModel__4": {
+    "auto_structured_output__model_builder__NestedModel__5": {
       "properties": {
         "primary_field": {
           "description": "Primary research field of the paper.",
@@ -323,7 +427,6 @@
           "type": "array"
         },
         "keywords": {
-          "default": [],
           "description": "Keywords associated with the paper.",
           "items": {
             "type": "string"
@@ -332,43 +435,66 @@
           "type": "array"
         },
         "subject_categories": {
-          "default": [],
-          "description": "Subject categories the paper falls into.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Subject Categories",
-          "type": "array"
-        },
-        "research_methodology_type": {
-          "description": "Type of research methodology used.",
-          "enum": [
-            "experimental",
-            "theoretical",
-            "computational",
-            "other"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
           ],
-          "title": "Research Methodology Type",
-          "type": "string"
+          "default": null,
+          "description": "Subject categories for the research.",
+          "title": "Subject Categories"
+        },
+        "methodology_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "experimental",
+                "theoretical",
+                "computational",
+                "survey",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Type of research methodology used.",
+          "title": "Methodology Type"
         },
         "classification_codes": {
-          "default": [],
-          "description": "Classification codes like ACM, MSC, etc.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Classification Codes",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Relevant classification codes such as ACM or MSC.",
+          "title": "Classification Codes"
         }
       },
       "required": [
         "primary_field",
-        "research_methodology_type"
+        "keywords"
       ],
       "title": "NestedModel",
       "type": "object"
     },
-    "auto_structured_output__model_builder__NestedModel__5": {
+    "auto_structured_output__model_builder__NestedModel__6": {
       "properties": {
         "background": {
           "description": "Background section of the abstract.",
@@ -400,74 +526,117 @@
       "title": "NestedModel",
       "type": "object"
     },
-    "auto_structured_output__model_builder__NestedModel__6": {
+    "auto_structured_output__model_builder__NestedModel__7": {
       "properties": {
-        "structured_abstract": {
-          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5"
+        "abstract": {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
         },
         "key_findings": {
-          "default": "",
-          "description": "Summary of the key findings of the paper.",
-          "title": "Key Findings",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Key findings of the research paper.",
+          "title": "Key Findings"
         },
         "novel_contributions": {
-          "default": "",
-          "description": "Description of novel contributions made by the research.",
-          "title": "Novel Contributions",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Novel contributions made by the paper.",
+          "title": "Novel Contributions"
         },
-        "research_gaps": {
-          "default": "",
-          "description": "Research gaps addressed by the paper.",
-          "title": "Research Gaps",
-          "type": "string"
+        "research_gaps_addressed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Research gaps that the paper addresses.",
+          "title": "Research Gaps Addressed"
         }
       },
       "required": [
-        "structured_abstract"
+        "abstract"
       ],
       "title": "NestedModel",
       "type": "object"
     },
-    "auto_structured_output__model_builder__NestedModel__7": {
+    "auto_structured_output__model_builder__NestedModel__8": {
       "properties": {
         "reference_count": {
-          "description": "Total number of references cited in the paper.",
+          "description": "Total count of references cited.",
           "title": "Reference Count",
           "type": "integer"
         },
         "citation_types": {
-          "default": [],
-          "description": "Types of citations used in the paper.",
-          "items": {
-            "enum": [
-              "theory",
-              "methodology",
-              "comparison"
-            ],
-            "type": "string"
-          },
-          "title": "Citation Types",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "enum": [
+                  "theory",
+                  "methodology",
+                  "comparison",
+                  "other"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Types of citations included in the paper.",
+          "title": "Citation Types"
         },
         "key_papers_cited": {
-          "default": [],
-          "description": "List of key papers cited in the work.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Key Papers Cited",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Key papers that are frequently cited.",
+          "title": "Key Papers Cited"
         },
-        "datasets_or_tools_referenced": {
-          "default": [],
+        "datasets_tools_referenced": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Datasets or tools referenced in the paper.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Datasets Or Tools Referenced",
-          "type": "array"
+          "title": "Datasets Tools Referenced"
         }
       },
       "required": [
@@ -476,96 +645,76 @@
       "title": "NestedModel",
       "type": "object"
     },
-    "auto_structured_output__model_builder__NestedModel__8": {
+    "auto_structured_output__model_builder__NestedModel__9": {
       "properties": {
         "supplementary_materials": {
-          "default": [],
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Links to supplementary materials.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Supplementary Materials",
-          "type": "array"
+          "title": "Supplementary Materials"
         },
         "source_code_repositories": {
-          "default": [],
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
           "description": "Links to source code repositories.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Source Code Repositories",
-          "type": "array"
+          "title": "Source Code Repositories"
         },
         "datasets": {
-          "default": [],
-          "description": "Links to datasets.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Datasets",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Links to datasets used or produced.",
+          "title": "Datasets"
         },
         "experimental_protocols": {
-          "default": [],
-          "description": "Descriptions or links to experimental protocols.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Experimental Protocols",
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Links to experimental protocols.",
+          "title": "Experimental Protocols"
         },
         "reproducibility_information": {
           "default": "",
-          "description": "Information on the reproducibility of the research.",
+          "description": "Information about the reproducibility of the study.",
           "title": "Reproducibility Information",
-          "type": "string"
-        }
-      },
-      "title": "NestedModel",
-      "type": "object"
-    },
-    "auto_structured_output__model_builder__NestedModel__9": {
-      "properties": {
-        "funding_sources": {
-          "default": [],
-          "description": "List of funding sources for the research.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Funding Sources",
-          "type": "array"
-        },
-        "grant_numbers": {
-          "default": [],
-          "description": "Grant numbers associated with the funding.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Grant Numbers",
-          "type": "array"
-        },
-        "conflict_of_interest_statements": {
-          "default": [],
-          "description": "Statements of potential conflicts of interest.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Conflict Of Interest Statements",
-          "type": "array"
-        },
-        "ethics_approval_numbers": {
-          "default": [],
-          "description": "Ethics approval numbers if applicable.",
-          "items": {
-            "type": "string"
-          },
-          "title": "Ethics Approval Numbers",
-          "type": "array"
-        },
-        "data_availability_statements": {
-          "default": "",
-          "description": "Statement regarding the availability of the data used.",
-          "title": "Data Availability Statements",
           "type": "string"
         }
       },
@@ -574,47 +723,27 @@
     }
   },
   "properties": {
-    "publication_info": {
+    "publication_information": {
       "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
-      "description": "Information about the publication of the paper."
+      "description": "Details about the publication of the research paper."
     },
     "author_details": {
-      "description": "List of authors with their details.",
+      "description": "List of all authors involved in the paper.",
       "items": {
-        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3"
+        "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
       },
       "title": "Author Details",
       "type": "array"
     },
     "research_classification": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__4"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Classification details of the research paper."
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__5",
+      "description": "Classification details for the research paper."
     },
     "abstract_and_content": {
-      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6",
-      "description": "Content of the paper including abstract and key findings."
+      "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7",
+      "description": "Abstract and main content summary of the paper."
     },
     "citations_and_references": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Details about citations and references used in the paper."
-    },
-    "research_artifacts": {
       "anyOf": [
         {
           "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__8"
@@ -624,9 +753,9 @@
         }
       ],
       "default": null,
-      "description": "Additional research artifacts associated with the paper."
+      "description": "Information about references cited in the paper."
     },
-    "funding_and_ethics": {
+    "research_artifacts": {
       "anyOf": [
         {
           "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__9"
@@ -636,7 +765,19 @@
         }
       ],
       "default": null,
-      "description": "Information about funding and ethical considerations."
+      "description": "URLs to any supplementary research artifacts associated with the paper."
+    },
+    "funding_and_ethics": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__10"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Funding and ethical considerations for the research."
     },
     "impact_metrics": {
       "anyOf": [
@@ -648,7 +789,7 @@
         }
       ],
       "default": null,
-      "description": "Metrics measuring the impact of the paper."
+      "description": "Impact metrics for the paper."
     },
     "version_control": {
       "anyOf": [
@@ -660,14 +801,15 @@
         }
       ],
       "default": null,
-      "description": "Details on version control and history of the paper."
+      "description": "Information about the version history of the paper."
     }
   },
   "required": [
-    "publication_info",
+    "publication_information",
     "author_details",
+    "research_classification",
     "abstract_and_content"
   ],
-  "title": "AcademicPaperMetadata",
+  "title": "AcademicResearchPaperMetadata",
   "type": "object"
 }

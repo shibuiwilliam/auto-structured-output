@@ -15,8 +15,8 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 extractor = StructureExtractor(client)
 
 
-def run(prompt: str, file_name: str):
-    T_Model = extractor.extract_structure(prompt)
+def run(prompt: str, file_name: str) -> None:
+    T_Model = extractor.extract_structure([prompt])
 
     print(f"Generated model: {T_Model.__name__}")
     print(f"Fields: {T_Model.model_json_schema()}")
@@ -38,7 +38,7 @@ def run(prompt: str, file_name: str):
     extractor.save_extracted_json(T_Model, file_name)
 
 
-def example_1_nested_objects():
+def example_1_nested_objects() -> None:
     """Example 1: Nested object structures"""
     print("\n=== Example 1: Nested Objects (User Profile) ===")
 
@@ -70,7 +70,7 @@ Output user profile information:
     run(prompt, "examples/schemas/advanced_examples/user_profile.json")
 
 
-def example_2_complex_article():
+def example_2_complex_article() -> None:
     """Example 2: Complex article with nested author and comments"""
     print("\n=== Example 2: Complex Article Structure ===")
 
@@ -115,7 +115,7 @@ Output article information:
     run(prompt, "examples/schemas/advanced_examples/complex_article.json")
 
 
-def example_3_array_of_objects():
+def example_3_array_of_objects() -> None:
     """Example 3: Arrays of nested objects"""
     print("\n=== Example 3: Array of Objects (Order System) ===")
 
@@ -162,7 +162,7 @@ The output should be in the following format:
     run(prompt, "examples/schemas/advanced_examples/order_system.json")
 
 
-def example_4_deep_nesting():
+def example_4_deep_nesting() -> None:
     """Example 4: Deeply nested structure (Organization)"""
     print("\n=== Example 4: Deeply Nested Structure (Organization) ===")
 
@@ -190,7 +190,7 @@ Output organization information:
     run(prompt, "examples/schemas/advanced_examples/organization.json")
 
 
-def example_5_anyof_union_types():
+def example_5_anyof_union_types() -> None:
     """Example 5: Using anyOf for union types"""
     print("\n=== Example 5: Union Types (Payment Methods) ===")
 
@@ -234,7 +234,7 @@ Output payment information:
     run(prompt, "examples/schemas/advanced_examples/payment_methods.json")
 
 
-def example_6_validation_constraints():
+def example_6_validation_constraints() -> None:
     """Example 6: Models with validation constraints"""
     print("\n=== Example 6: Validation Constraints ===")
 

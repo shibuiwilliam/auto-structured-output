@@ -3,7 +3,7 @@
     "auto_structured_output__model_builder__NestedModel__1": {
       "properties": {
         "product_id": {
-          "description": "Unique identifier for the specific product mentioned in the feedback.",
+          "description": "Identifier of the product associated with the feedback.",
           "title": "Product Id",
           "type": "string"
         },
@@ -17,7 +17,7 @@
             }
           ],
           "default": null,
-          "description": "Customer feedback regarding the physical state of the product.",
+          "description": "Observation about the product's physical condition.",
           "title": "Condition"
         },
         "functionality": {
@@ -30,7 +30,7 @@
             }
           ],
           "default": null,
-          "description": "Feedback regarding how well the product functions as expected.",
+          "description": "Feedback on how well the product functions.",
           "title": "Functionality"
         },
         "durability": {
@@ -43,7 +43,7 @@
             }
           ],
           "default": null,
-          "description": "Comments about the longevity and durability of the product.",
+          "description": "Observation about the product's durability.",
           "title": "Durability"
         },
         "met_expectations": {
@@ -56,7 +56,7 @@
             }
           ],
           "default": null,
-          "description": "Indicator of whether the product met the customer's expectations.",
+          "description": "Indicates whether the product met customer expectations.",
           "title": "Met Expectations"
         },
         "quality_issues": {
@@ -72,7 +72,7 @@
             }
           ],
           "default": null,
-          "description": "Array of specific quality issues reported by the customer.",
+          "description": "List of any quality issues reported by the customer.",
           "title": "Quality Issues"
         }
       },
@@ -94,7 +94,7 @@
             }
           ],
           "default": null,
-          "description": "Feedback regarding the speed of delivery.",
+          "description": "Customer's feedback on the speed of shipping.",
           "title": "Shipping Speed"
         },
         "packaging_quality": {
@@ -107,10 +107,23 @@
             }
           ],
           "default": null,
-          "description": "Comments on the quality of the packaging during delivery.",
+          "description": "Observation about the condition of the packaging.",
           "title": "Packaging Quality"
         },
         "delivery_accuracy": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Feedback on the accuracy of the delivery (e.g., correct items delivered).",
+          "title": "Delivery Accuracy"
+        },
+        "met_promised_timelines": {
           "anyOf": [
             {
               "type": "boolean"
@@ -120,8 +133,8 @@
             }
           ],
           "default": null,
-          "description": "Indicates whether the correct items were delivered.",
-          "title": "Delivery Accuracy"
+          "description": "Indicates if the delivery met the timelines promised.",
+          "title": "Met Promised Timelines"
         },
         "logistics_issues": {
           "anyOf": [
@@ -136,21 +149,8 @@
             }
           ],
           "default": null,
-          "description": "Array of issues encountered during delivery.",
+          "description": "List of issues regarding the logistics process.",
           "title": "Logistics Issues"
-        },
-        "met_promised_timeline": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Indicates if the delivery met the promised timeline.",
-          "title": "Met Promised Timeline"
         }
       },
       "title": "NestedModel",
@@ -159,6 +159,11 @@
     "auto_structured_output__model_builder__NestedModel__3": {
       "properties": {
         "overall_satisfaction": {
+          "description": "Overall satisfaction score given by the customer (0-10).",
+          "title": "Overall Satisfaction",
+          "type": "number"
+        },
+        "nps": {
           "anyOf": [
             {
               "type": "integer"
@@ -168,10 +173,10 @@
             }
           ],
           "default": null,
-          "description": "Overall satisfaction rating provided by the customer, typically on a scale from 1 to 10.",
-          "title": "Overall Satisfaction"
+          "description": "Net Promoter Score styled response; likelihood to recommend (0-10).",
+          "title": "Nps"
         },
-        "nps_score": {
+        "likelihood_to_repurchase": {
           "anyOf": [
             {
               "type": "integer"
@@ -181,23 +186,10 @@
             }
           ],
           "default": null,
-          "description": "Net Promoter Score to determine likelihood to recommend, typically on a scale from 0 to 10.",
-          "title": "Nps Score"
+          "description": "Likelihood that the customer will make a repurchase (0-10).",
+          "title": "Likelihood To Repurchase"
         },
-        "repurchase_likelihood": {
-          "anyOf": [
-            {
-              "type": "integer"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Likelihood that the customer would repurchase, typically on a scale from 1 to 5.",
-          "title": "Repurchase Likelihood"
-        },
-        "emotional_sentiment": {
+        "sentiment": {
           "anyOf": [
             {
               "enum": [
@@ -212,10 +204,13 @@
             }
           ],
           "default": null,
-          "description": "The emotional sentiment expressed in feedback, typically positive, neutral, or negative.",
-          "title": "Emotional Sentiment"
+          "description": "Emotional sentiment expressed in the feedback.",
+          "title": "Sentiment"
         }
       },
+      "required": [
+        "overall_satisfaction"
+      ],
       "title": "NestedModel",
       "type": "object"
     },
@@ -231,7 +226,7 @@
             }
           ],
           "default": null,
-          "description": "Feedback on how quickly customer service responded.",
+          "description": "Customer's feedback on the promptness of service response.",
           "title": "Responsiveness"
         },
         "problem_resolution": {
@@ -244,7 +239,7 @@
             }
           ],
           "default": null,
-          "description": "Effectiveness of customer service in resolving issues.",
+          "description": "Effectiveness of resolving customer issues.",
           "title": "Problem Resolution"
         },
         "staff_professionalism": {
@@ -257,7 +252,7 @@
             }
           ],
           "default": null,
-          "description": "Comments on the professionalism of the customer service staff.",
+          "description": "Opinion on the professionalism of the staff.",
           "title": "Staff Professionalism"
         }
       },
@@ -266,7 +261,7 @@
     },
     "auto_structured_output__model_builder__NestedModel__5": {
       "properties": {
-        "competitor_mentions": {
+        "competitors_mentioned": {
           "anyOf": [
             {
               "items": {
@@ -279,8 +274,8 @@
             }
           ],
           "default": null,
-          "description": "List of competitors mentioned by customers.",
-          "title": "Competitor Mentions"
+          "description": "List of competitors mentioned in the feedback.",
+          "title": "Competitors Mentioned"
         },
         "price_comparisons": {
           "anyOf": [
@@ -308,8 +303,96 @@
             }
           ],
           "default": null,
-          "description": "List of alternative products considered by the customer.",
+          "description": "Alternative products considered by the customer.",
           "title": "Alternative Products"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__6": {
+      "properties": {
+        "recommendations": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of suggested improvements.",
+          "title": "Recommendations"
+        },
+        "priority_areas": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Key areas identified for immediate attention and improvement.",
+          "title": "Priority Areas"
+        }
+      },
+      "title": "NestedModel",
+      "type": "object"
+    },
+    "auto_structured_output__model_builder__NestedModel__7": {
+      "properties": {
+        "product_category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Categorization of the product for filtering purposes.",
+          "title": "Product Category"
+        },
+        "customer_segment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Segmentation of customers based on demographics or behavior.",
+          "title": "Customer Segment"
+        },
+        "issue_severity": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Severity of the issues raised for prioritization.",
+          "title": "Issue Severity"
         }
       },
       "title": "NestedModel",
@@ -317,9 +400,25 @@
     }
   },
   "properties": {
+    "feedback_id": {
+      "description": "Unique identifier for each piece of feedback.",
+      "title": "Feedback Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "Date and time when the feedback was submitted.",
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "customer_id": {
+      "description": "Unique identifier for the customer providing the feedback.",
+      "title": "Customer Id",
+      "type": "string"
+    },
     "product_quality_assessment": {
       "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__1",
-      "description": "Feedback details about the product quality including condition, functionality, durability, and whether it met customer expectations."
+      "description": "Detailed feedback about the product quality."
     },
     "delivery_experience": {
       "anyOf": [
@@ -331,7 +430,7 @@
         }
       ],
       "default": null,
-      "description": "Information about the customer's delivery experience."
+      "description": "Feedback about the customer's experience with delivery."
     },
     "customer_satisfaction_metrics": {
       "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__3",
@@ -347,7 +446,7 @@
         }
       ],
       "default": null,
-      "description": "Feedback regarding customer service quality."
+      "description": "Evaluation of customer service interactions."
     },
     "competitive_insights": {
       "anyOf": [
@@ -359,96 +458,40 @@
         }
       ],
       "default": null,
-      "description": "Insights related to competitors and market comparisons."
+      "description": "Mentions of competitors and related insights."
     },
     "actionable_recommendations": {
       "anyOf": [
         {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__6"
         },
         {
           "type": "null"
         }
       ],
       "default": null,
-      "description": "Array of actionable recommendations based on the feedback.",
-      "title": "Actionable Recommendations"
+      "description": "Suggestions for improvements based on the feedback."
     },
-    "feedback_date": {
-      "description": "The date and time when the feedback was submitted.",
-      "format": "date-time",
-      "title": "Feedback Date",
-      "type": "string"
-    },
-    "product_category": {
+    "trend_analysis": {
       "anyOf": [
         {
-          "enum": [
-            "electronics",
-            "apparel",
-            "home_goods",
-            "sports",
-            "automotive",
-            "other"
-          ],
-          "type": "string"
+          "$ref": "#/$defs/auto_structured_output__model_builder__NestedModel__7"
         },
         {
           "type": "null"
         }
       ],
       "default": null,
-      "description": "The category to which the product belongs.",
-      "title": "Product Category"
-    },
-    "customer_segment": {
-      "anyOf": [
-        {
-          "enum": [
-            "individual",
-            "business",
-            "vip",
-            "new",
-            "returning"
-          ],
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "The segment or profile of the customer providing feedback.",
-      "title": "Customer Segment"
-    },
-    "issue_severity": {
-      "anyOf": [
-        {
-          "enum": [
-            "low",
-            "medium",
-            "high",
-            "critical"
-          ],
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "The perceived severity of the issues raised in the feedback.",
-      "title": "Issue Severity"
+      "description": "Facilitates the analysis of trends over time."
     }
   },
   "required": [
+    "feedback_id",
+    "timestamp",
+    "customer_id",
     "product_quality_assessment",
-    "customer_satisfaction_metrics",
-    "feedback_date"
+    "customer_satisfaction_metrics"
   ],
-  "title": "CustomerFeedbackAnalysis",
+  "title": "CustomerFeedbackInsights",
   "type": "object"
 }

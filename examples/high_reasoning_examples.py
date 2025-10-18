@@ -17,16 +17,16 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 extractor = StructureExtractor(client)
 
 
-def run(prompt: str, file_name: str):
-    T_Model = extractor.extract_structure(prompt, use_high_reasoning=True)
+def run(prompts: list[str], file_name: str) -> None:
+    T_Model = extractor.extract_structure(prompts, use_high_reasoning=True)
 
     print(f"Generated model: {T_Model.__name__}")
     print(f"Fields: {T_Model.model_json_schema()}")
 
-    # Use the model
+    # Use the model with the first prompt for demonstration
     response = client.chat.completions.parse(
         model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
+        messages=[{"role": "user", "content": prompts[0]}],
         response_format=T_Model,
     )
 
@@ -40,7 +40,7 @@ def run(prompt: str, file_name: str):
     extractor.save_extracted_json(T_Model, file_name)
 
 
-def example_1_customer_feedback_analysis():
+def example_1_customer_feedback_analysis() -> None:
     """Example 1: Analyze customer feedback and extract insights
 
     This prompt doesn't specify exact fields, so high reasoning mode
@@ -78,10 +78,10 @@ The extracted structure should support trend analysis over time and enable filte
 by product category, customer segment, and severity of issues raised.
     """
 
-    run(prompt, "examples/schemas/high_reasoning_examples/customer_feedback_analysis.json")
+    run([prompt], "examples/schemas/high_reasoning_examples/customer_feedback_analysis.json")
 
 
-def example_2_meeting_summary():
+def example_2_meeting_summary() -> None:
     """Example 2: Extract structured meeting summary
 
     The prompt describes a meeting scenario but doesn't specify exact fields.
@@ -123,10 +123,10 @@ The structure should enable easy search, filtering by participant or topic, trac
 of action item completion, and integration with project management tools.
     """
 
-    run(prompt, "examples/schemas/high_reasoning_examples/meeting_summary.json")
+    run([prompt], "examples/schemas/high_reasoning_examples/meeting_summary.json")
 
 
-def example_3_research_paper_metadata():
+def example_3_research_paper_metadata() -> None:
     """Example 3: Extract research paper metadata
 
     Infer what metadata would be useful for academic research papers
@@ -176,189 +176,157 @@ The structure should enable bibliometric analysis, research trend identification
 collaboration network mapping, and integration with reference management software.
     """
 
-    run(prompt, "examples/schemas/high_reasoning_examples/research_paper_metadata.json")
+    run([prompt], "examples/schemas/high_reasoning_examples/research_paper_metadata.json")
 
 
-def example_4_job_application_evaluation():
+def example_4_job_application_evaluation() -> None:
     """Example 4: Evaluate job applications
 
-    Infer what information would be valuable when evaluating job candidates
-    without prescribing exact evaluation criteria.
+    Demonstrates multi-prompt unified schema generation for different candidate levels.
+    The system infers a comprehensive structure that works for both junior and senior
+    software engineering candidates.
     """
     print("\n=== Example 4: Job Application Evaluation ===")
 
-    prompt = """
-We're building a hiring system for software engineering positions that needs to evaluate
-candidates holistically and support our decision-making process. The system should capture
-everything relevant about each applicant - from their basic information and how to reach
-them, to where they're currently located and whether they're open to moving for the role.
-We need to understand their educational journey, what they studied and where, and any
-credentials or learning experiences they've accumulated over time, whether formal or
-self-directed.
+    prompts = [
+        """
+We're building a hiring system for junior software engineering positions. We need to evaluate
+entry-level candidates who may have limited professional experience but show strong potential.
+The system should capture their educational background, internships, bootcamp experience,
+personal projects, coding skills, problem-solving ability, learning agility, and cultural fit.
+We need to assess their foundational technical knowledge, enthusiasm for software development,
+ability to work in teams, and growth mindset. Track their application source, interview
+performance on coding challenges, behavioral assessments, and mentor feedback. The evaluation
+should consider that they're early in their career and focus on potential rather than proven
+track record.
+        """,
+        """
+We're building a hiring system for senior software engineering positions. We need to evaluate
+experienced candidates who can lead technical initiatives and mentor teams. The system should
+capture their career progression, major projects delivered, architectural decisions made,
+technical leadership experience, and impact on business outcomes. We need to assess their
+expertise in system design, their ability to navigate ambiguity, their track record of
+delivering complex projects, code quality standards, and technical mentorship. The evaluation
+should measure their strategic thinking, cross-functional collaboration, ability to influence
+technical direction, and experience scaling systems and teams.
+        """,
+        """
+We're building a hiring system for specialized software engineering roles like machine learning
+engineers, security engineers, or platform engineers. We need to evaluate candidates with deep
+domain expertise. The system should capture their specialized technical skills, relevant
+certifications, contributions to the field (publications, patents, open source), and experience
+with domain-specific tools and methodologies. We need to assess the depth of their expertise,
+their ability to solve complex domain-specific problems, their understanding of best practices
+in their specialty, and their ability to translate technical concepts to non-specialists. The
+evaluation should consider both breadth of general software engineering skills and depth in
+their specialized domain.
+        """,
+    ]
 
-Their professional history is crucial - we want to know where they've worked, what they've
-built, the technologies they've used in practice, the scale of teams and projects they've
-been part of, and the tangible impact they've made. This includes understanding the depth
-and breadth of their technical capabilities across programming languages, frameworks,
-architectural patterns, infrastructure, and any specialized domains they've explored.
-
-Beyond their resume, we're interested in their project work - what they've created, how
-they approach problems, their contributions to collaborative efforts or open source, and
-any recognition they've received. We also value the human aspects: how they communicate,
-how they work with others, whether they've led or mentored, how they adapt to change, and
-signals about whether they'd thrive in our culture.
-
-The evaluation itself needs to be systematic yet nuanced - we need ways to rate technical
-strength, assess how well their experience aligns with our needs, evaluate potential for
-growth, capture interview insights if we have them, and ultimately arrive at a hiring
-recommendation. At the same time, we should flag any concerns: unexplained career gaps,
-patterns of short tenures, mismatches between their profile and our requirements, or
-compensation expectations that don't align.
-
-Throughout the recruiting lifecycle, we need to track operational details: where candidates
-came from, when they applied, who's handling their application, what stage they're at, and
-how efficiently we're moving them through the process. The entire structure should enable
-us to compare candidates fairly, analyze our recruiting pipeline, measure our performance,
-and integrate seamlessly with our applicant tracking tools.
-    """
-
-    run(prompt, "examples/schemas/high_reasoning_examples/job_application_evaluation.json")
+    run(prompts, "examples/schemas/high_reasoning_examples/job_application_evaluation.json")
 
 
-def example_5_financial_transaction_analysis():
+def example_5_financial_transaction_analysis() -> None:
     """Example 5: Analyze financial transactions for fraud detection
 
-    Infer what structured information would be useful for fraud detection
-    without explicitly defining all risk factors.
+    Demonstrates multi-prompt unified schema generation for different transaction types.
+    The system infers a comprehensive fraud detection structure that works across
+    e-commerce purchases, wire transfers, and recurring subscription payments.
     """
     print("\n=== Example 5: Financial Transaction Analysis ===")
 
-    prompt = """
-We need a sophisticated fraud detection system that can analyze financial transactions as
-they happen and identify potentially suspicious activity before it causes damage. Every
-transaction carries a wealth of signals - the basic facts about what's being transacted,
-when and where it's happening, how much money is involved, what currencies are at play,
-who the merchant or recipient is, how the payment is being made, and what state the
-transaction is in at any given moment.
+    prompts = [
+        """
+We need a fraud detection system for e-commerce transactions - online purchases made with
+credit cards or digital wallets. These transactions happen quickly, involve varying amounts,
+and target a wide range of merchants. We need to capture transaction details (amount, currency,
+merchant, items purchased), payment method information, shipping vs billing address comparison,
+device fingerprinting, IP geolocation, and velocity checks (how many transactions in recent
+time periods). Assess risk based on card verification results, AVS matching, unusual purchase
+patterns, first-time buyer behavior, high-value items, digital goods purchases, and mismatches
+between customer location and shipping destination. Track merchant category risk, time-of-day
+patterns, and whether the transaction follows typical user behavior. Flag account takeover
+signals like sudden password changes, new devices, or shipping address changes.
+        """,
+        """
+We need a fraud detection system for wire transfers and bank-to-bank payments. These are
+high-value, irreversible transactions that require extra scrutiny. We need to capture sender
+and recipient bank details, routing information, transfer amounts, purpose codes, beneficiary
+information, and international vs domestic indicators. Assess risk based on transfer size
+relative to account history, frequency of international transfers, transfers to high-risk
+countries, structuring patterns (amounts just below reporting thresholds), and relationships
+between sender and recipient. Track compliance requirements like AML screening, sanctions list
+checking, politically exposed persons (PEP) identification, and regulatory reporting thresholds.
+The system needs to handle both same-day processing decisions and post-transaction monitoring
+for suspicious patterns.
+        """,
+        """
+We need a fraud detection system for recurring subscription and membership payments. These
+involve ongoing relationships, automatic billing, and subscription lifecycle management. We
+need to capture subscription details (service type, billing frequency, amount), payment method
+updates, cancellation and reactivation patterns, failed payment attempts, and churn signals.
+Assess risk based on unusual subscription stacking (multiple subscriptions in short time),
+payment method testing (small charges followed by larger ones), stolen card usage patterns,
+friendly fraud indicators (chargebacks after service use), and account sharing across different
+locations. Track subscription value changes, upgrade/downgrade patterns, and correlation with
+trial period abuse. The system should identify both fraud at signup and ongoing account abuse
+while minimizing false positives that could disrupt legitimate long-term customers.
+        """,
+    ]
 
-Behind each transaction is an account with its own history and characteristics - how long
-it's been active, how verified the user is, their typical transaction patterns and volumes,
-their current balance, and any relationships to other accounts or payment instruments. The
-context matters immensely: we need to understand not just where the transaction is
-originating geographically, but also what device is being used, whether there are signs
-of location spoofing or anonymization, and whether the physical movements implied by the
-transaction history are even plausible for a human being.
-
-What really reveals fraud is deviation from the norm. We need to detect when someone's
-behavior suddenly changes - when they're transacting more frequently than usual, at unusual
-times, for unusual amounts, with unfamiliar merchants or in new categories. We need to see
-how they compare to their peer group and spot the outliers. Every transaction should get a
-risk assessment that considers multiple dimensions of threat - from account takeover to
-synthetic identity fraud to money laundering - with some measure of confidence in that
-assessment and connections to similar patterns we've seen before.
-
-The relationships between entities matter too. Transactions don't happen in isolation -
-they're part of networks where accounts, devices, and IP addresses intersect in meaningful
-ways. Following the money through chains of transactions, understanding who benefits,
-identifying clusters of related activity - these network patterns often expose coordinated
-fraud that individual transaction analysis would miss.
-
-Merchants themselves carry risk. Some industries are riskier than others, some merchants
-have concerning chargeback rates, geographical mismatches between merchant and transaction
-locations can be suspicious, and newer merchant accounts deserve extra scrutiny, especially
-if they've been linked to fraud before. The way users authenticate themselves provides
-crucial security signals - what methods they're using, their history of authentication
-successes and failures, how they respond to security challenges, and the overall security
-posture of their session.
-
-There's also a compliance dimension we can't ignore. Certain transaction patterns trigger
-anti-money laundering requirements, we need to screen against sanctions lists, politically
-exposed persons require special handling, regulatory thresholds demand reporting, and
-different jurisdictions impose different obligations. All of this feeds into our decision-
-making process, which must track not just the automated accept or reject decision, but also
-when human review is needed, who's investigating, what they're finding, how likely this is
-to be a false positive, what we're telling the customer, and how each case ultimately
-resolves.
-
-The entire system needs to work in real-time, support our machine learning models, enable
-pattern recognition across millions of transactions, satisfy regulatory reporting
-requirements, and integrate with our case management tools for investigating and resolving
-suspicious activity.
-    """
-
-    run(prompt, "examples/schemas/high_reasoning_examples/financial_transaction_analysis.json")
+    run(prompts, "examples/schemas/high_reasoning_examples/financial_transaction_analysis.json")
 
 
-def example_6_high_reasoning():
-    """Example 6: Comparison between standard and high reasoning modes
+def example_6_high_reasoning() -> None:
+    """Example 6: Customer review analysis across different product categories
 
-    Demonstrates the difference between standard mode (clear structure)
-    and high reasoning mode (inferred structure).
+    Demonstrates multi-prompt unified schema generation for analyzing reviews across
+    different product types. The system infers a comprehensive structure that works
+    for physical products, digital services, and hospitality experiences.
     """
     print("\n=== Example 6: High Reasoning ===")
 
-    prompt = """
-Our product team needs deep insights from customer reviews to drive decisions across
-development, marketing, and customer experience. We're drowning in review data but
-struggling to extract actionable intelligence that different teams can actually use.
+    prompts = [
+        """
+Our product team needs to analyze customer reviews for physical consumer electronics products
+like smartphones, laptops, and smart home devices. We need to extract insights about product
+quality, build materials, design aesthetics, performance benchmarks, battery life, durability
+over time, and technical specifications meeting expectations. Understand customer sentiment
+about features, ease of setup, software updates, compatibility with other devices, and value
+for money. Identify common failure modes, warranty claims patterns, comparison with competitor
+products, and whether customers would recommend or repurchase. Track review authenticity,
+verified purchase status, reviewer expertise level, and time since purchase. The analysis
+should help engineering prioritize quality improvements, marketing understand key selling
+points, and product management decide on next generation features.
+        """,
+        """
+Our customer success team needs to analyze reviews for digital subscription services like
+streaming platforms, SaaS tools, and online learning platforms. We need to extract insights
+about service reliability, content quality and variety, user interface and experience, customer
+support responsiveness, subscription value perception, and ease of cancellation. Understand
+sentiment about feature updates, content additions or removals, pricing changes, platform
+performance across devices, and integration with other tools. Identify reasons for churn,
+common complaints, feature requests, comparison with competing services, and likelihood to
+recommend. Track subscriber tenure, usage frequency, plan tier, and whether reviews come from
+active or cancelled subscribers. The analysis should inform product roadmap, pricing strategy,
+content acquisition decisions, and customer retention initiatives.
+        """,
+        """
+Our hospitality team needs to analyze customer reviews for hotels, restaurants, and travel
+experiences. We need to extract insights about service quality, staff friendliness and
+professionalism, cleanliness and maintenance, ambiance and atmosphere, food quality and
+presentation, location convenience, and value for price paid. Understand sentiment about
+specific amenities, accessibility, handling of special requests, problem resolution, and
+overall experience meeting expectations. Identify peak complaint areas, standout positive
+experiences, comparison with nearby competitors, demographic patterns in satisfaction, and
+likelihood to return or recommend. Track reviewer travel purpose (business, leisure, family),
+group size, season of visit, and booking channel. The analysis should guide staff training,
+facility improvements, service protocol updates, and targeted marketing to specific customer
+segments.
+        """,
+    ]
 
-Start with the basics - we need to know what product we're even talking about, including
-all its identifiers, what it costs, when people are buying it, and where it sits in its
-lifecycle. From there, we need the big picture on sentiment: what are people saying
-overall, how is that sentiment distributed, how has it changed over time, and can we trust
-these reviews are genuine? Star ratings matter, but we need to understand what's behind
-them.
-
-The real value comes from understanding specific aspects of the product. When customers
-talk about quality, design, how it works, how long it lasts, how easy it is to use, whether
-it's worth the money - each of these dimensions tells a different story. We need to know
-not just what they're saying about each aspect, but how often they're talking about it and
-which aspects matter most to their overall satisfaction.
-
-Who are these customers anyway? We need to read between the lines of reviews to understand
-different customer segments - their ages, how they're using the product, their level of
-expertise, what scenarios they're using it in, and what motivated them to buy it in the
-first place. Different personas will emerge from this data if we look carefully enough.
-
-Quality and performance issues tell us where to focus our engineering efforts. What's
-actually breaking or failing? How does reality compare to what we promised? What wears out
-too quickly? Are there patterns in defects or failure modes? How reliable is this product
-really proving to be over time? These signals guide our quality roadmap.
-
-We can't ignore the competitive landscape either. When customers mention other products,
-when they compare us to alternatives, when they talk about why they chose us or wish they
-hadn't - this is gold for positioning and strategy. We need to understand our relative
-strengths and weaknesses and where we sit in the market from the customer's perspective.
-
-The user experience journey matters from the moment they open the box. How hard is it to
-get started? What's the learning curve like? Are our docs helpful? When they need support,
-what happens? Even packaging and presentation influence perception. And we can't forget
-accessibility - are we serving all potential customers well?
-
-Price is always complicated. The same product at the same price can feel like a steal or a
-ripoff depending on the customer and their experience. We need to understand satisfaction
-with value, how different segments perceive the cost-benefit tradeoff, what discounts do to
-satisfaction, whether people would recommend us or buy again, and how value perception
-varies across different types of customers.
-
-All of this should point us toward what to build or fix next. What features do customers
-keep asking for? What frustrates them most? What design choices are backfiring? What's hard
-to use? What's missing entirely? We need to prioritize improvements based not just on what
-people say, but how often they say it and how much it matters to their experience.
-
-Finally, not all reviews are created equal. We need to assess credibility and quality -
-which reviews are actually helpful, which ones are detailed and thoughtful, which include
-evidence like photos or videos, which might be fake or manipulated, and whether there are
-suspicious patterns in when and how reviews appear. This meta-analysis helps us weight
-everything else appropriately.
-
-All of this intelligence should flow into concrete actions: shaping our product roadmap,
-refining our marketing messages, prioritizing quality improvements, understanding our
-competitive position, and making customers happier. The structure needs to support all
-these different uses while being rigorous enough for data-driven decision making.
-    """
-
-    run(prompt, "examples/schemas/high_reasoning_examples/high_reasoning.json")
+    run(prompts, "examples/schemas/high_reasoning_examples/high_reasoning.json")
 
 
 if __name__ == "__main__":

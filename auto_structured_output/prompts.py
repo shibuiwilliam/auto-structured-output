@@ -1,5 +1,7 @@
 """Module providing prompt templates for OpenAI"""
 
+import json
+
 SCHEMA_EXTRACTION_SYSTEM_PROMPT = """You are an expert at generating JSON Schemas for structured outputs.
 Strictly follow the OpenAI Structured Outputs specifications when generating schemas.
 
@@ -38,13 +40,13 @@ Your task is to deeply analyze the user's intent and context to design a compreh
 - Set additionalProperties to false for type safety
 """
 
-SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE = """Analyze the following prompt and define the expected output structure in JSON Schema format compatible with OpenAI Structured Outputs.
+SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE = """Analyze the following prompt(s) and define a common output structure in JSON Schema format compatible with OpenAI Structured Outputs that can accommodate all the prompts.
 
-[Prompt]
-{prompt}
+[Prompt(s)]
+{prompts}
 
 [Requirements]
-Generate a JSON Schema that meets the following requirements:
+Generate a unified JSON Schema that meets the following requirements:
 
 1. Supported types (use only these types):
    - String, Number, Boolean, Integer, Object, Array, Enum, anyOf
@@ -119,13 +121,13 @@ Output JSON Schema:
 }}
 """
 
-SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE_HIGH_REASONING = """Analyze the following prompt carefully and infer the optimal structured output format.
+SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE_HIGH_REASONING = """Analyze the following prompt(s) carefully and infer the optimal structured output format that can accommodate all of them.
 
 [Context]
-{prompt}
+{prompts}
 
 [Your Task]
-Think deeply about what structured output would best serve this use case:
+Think deeply about what unified structured output would best serve these use case(s):
 
 1. **Domain Analysis**: What is the domain or context? What kind of data is being discussed?
 2. **Intent Recognition**: What is the user trying to accomplish? What information do they need?
@@ -183,22 +185,28 @@ Think step by step about the optimal structure before generating the schema.
 """
 
 
-def get_schema_extraction_messages(prompt: str, use_high_reasoning: bool = False) -> list[dict[str, str]]:
+def get_schema_extraction_messages(prompts: list[str], use_high_reasoning: bool = False) -> list[dict[str, str]]:
     """Generate messages for schema extraction
 
     Args:
-        prompt: User's natural language prompt
+        prompts: List of user's natural language prompts (can be single or multiple)
         use_high_reasoning: Whether to use high reasoning mode for unclear structures
 
     Returns:
         List of messages to send to OpenAI API
     """
+    # Format prompts as numbered list if multiple, or single prompt if one
+    if len(prompts) == 1:
+        formatted_prompts = prompts[0]
+    else:
+        formatted_prompts = "\n".join([f"{i + 1}. {prompt}" for i, prompt in enumerate(prompts)])
+
     if use_high_reasoning:
         return [
             {"role": "system", "content": SCHEMA_EXTRACTION_SYSTEM_PROMPT_HIGH_REASONING},
             {
                 "role": "user",
-                "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE_HIGH_REASONING.format(prompt=prompt),
+                "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE_HIGH_REASONING.format(prompts=formatted_prompts),
             },
         ]
     else:
@@ -206,13 +214,13 @@ def get_schema_extraction_messages(prompt: str, use_high_reasoning: bool = False
             {"role": "system", "content": SCHEMA_EXTRACTION_SYSTEM_PROMPT},
             {
                 "role": "user",
-                "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE.format(prompt=prompt),
+                "content": SCHEMA_EXTRACTION_USER_PROMPT_TEMPLATE.format(prompts=formatted_prompts),
             },
         ]
 
 
 def get_schema_retry_messages(
-    original_prompt: str,
+    original_prompt: list[str],
     previous_schema: dict | None,
     error_message: str,
     use_high_reasoning: bool = False,
@@ -228,7 +236,6 @@ def get_schema_retry_messages(
     Returns:
         List of messages including error feedback for retry
     """
-    import json
 
     # Start with the original messages
     messages = get_schema_extraction_messages(original_prompt, use_high_reasoning)

@@ -25,34 +25,56 @@ class SchemaGenerator:
 
     def extract_from_prompt(
         self,
-        prompt: str,
+        prompts: list[str],
         client: OpenAI | AzureOpenAI,
         use_high_reasoning: bool = False,
     ) -> dict[str, Any]:
-        """Extract schema from prompt with automatic retry on validation failure
+        """Extract schema from prompt(s) with automatic retry on validation failure
 
         Args:
-            prompt: Natural language prompt describing the output format
+            prompts: List of natural language prompts describing the output format(s).
+                    When multiple prompts are provided, generates a unified schema that
+                    can accommodate all prompts. Single prompt should be wrapped in a list.
             client: OpenAI API client
             use_high_reasoning: If True, use gpt-5 with enhanced reasoning for inferring
                               structure from unclear prompts. If False, use gpt-4o for
                               prompts with clearly defined structure.
 
         Returns:
-            Extracted and validated JSON Schema
+            Extracted and validated JSON Schema that covers all provided prompts
 
         Raises:
             ValueError: If the response from OpenAI API is invalid or schema validation
                        fails after all retry attempts
 
         Notes:
+            - Single prompt: Pass as ["your prompt"]
+            - Multiple prompts: Pass as ["prompt1", "prompt2", "prompt3"]
+            - Multiple prompts will generate a unified schema covering all use cases
             - use_high_reasoning=False (default): Use gpt-4o for fast extraction when
-              the expected structure is clearly defined in the prompt
+              the expected structure is clearly defined in the prompt(s)
             - use_high_reasoning=True: Use gpt-5 with extended reasoning to infer
-              optimal structure when the prompt lacks clear structural definition
+              optimal structure when the prompt(s) lack clear structural definition
             - Automatically retries with error feedback if validation fails
+
+        Examples:
+            Single prompt:
+            >>> schema = generator.extract_from_prompt(
+            ...     ["Extract user with name and email"],
+            ...     client
+            ... )
+
+            Multiple prompts (unified schema):
+            >>> schema = generator.extract_from_prompt(
+            ...     [
+            ...         "Extract user profile with name and email",
+            ...         "Extract admin profile with name, email, and role"
+            ...     ],
+            ...     client
+            ... )
+            # Returns schema with name, email, and optional role field
         """
-        messages = get_schema_extraction_messages(prompt, use_high_reasoning=use_high_reasoning)
+        messages = get_schema_extraction_messages(prompts, use_high_reasoning=use_high_reasoning)
         model = self.high_reasoning_model if use_high_reasoning else self.basic_prediction_model
 
         last_error = None
@@ -81,7 +103,7 @@ class SchemaGenerator:
 
                 # Otherwise, add error feedback and retry
                 messages = get_schema_retry_messages(
-                    original_prompt=prompt,
+                    original_prompt=prompts,
                     previous_schema=last_schema,
                     error_message=last_error,
                     use_high_reasoning=use_high_reasoning,

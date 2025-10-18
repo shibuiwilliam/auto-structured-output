@@ -2,7 +2,9 @@
 
 import json
 import os
+from datetime import date, datetime, time
 from enum import Enum
+from typing import Any
 
 import streamlit as st
 from openai import OpenAI
@@ -24,6 +26,29 @@ class GPTModel(Enum):
     def list_str() -> list[str]:
         """Return list of model values as strings."""
         return [model.value for model in GPTModel]
+
+
+def json_serial(obj: Any) -> str:
+    """JSON serializer for objects not serializable by default json code.
+
+    Handles datetime, date, and time objects by converting them to ISO format strings.
+
+    Args:
+        obj: Object to serialize
+
+    Returns:
+        String representation of the object
+
+    Raises:
+        TypeError: If object type is not supported
+    """
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    if isinstance(obj, date):
+        return obj.isoformat()
+    if isinstance(obj, time):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 
 def setup_page_config() -> None:
@@ -119,6 +144,8 @@ def initialize_session_state() -> None:
         st.session_state.extracted_schema = None
     if "llm_response" not in st.session_state:
         st.session_state.llm_response = None
+    if "num_prompts" not in st.session_state:
+        st.session_state.num_prompts = 1
 
 
 def render_structure_extraction_section(api_key: str, max_retries: int, use_high_reasoning: bool) -> None:
@@ -129,15 +156,49 @@ def render_structure_extraction_section(api_key: str, max_retries: int, use_high
         max_retries: Number of retry attempts
         use_high_reasoning: Whether to use high reasoning mode
     """
-    st.header("1️⃣ Extract Structure from Prompt")
+    st.header("1️⃣ Extract Structure from Prompt(s)")
 
-    prompt = st.text_area(
-        "Enter your prompt",
-        height=150,
-        placeholder="Example: Extract user information with name (string), age (integer), and email (string with email format)",
-        help="Describe the structure you want to extract",
-    )
+    # Info message about multi-prompt feature
+    if st.session_state.num_prompts > 1:
+        st.info(
+            f"📝 Multi-prompt mode: {st.session_state.num_prompts} prompts. "
+            "The system will generate a unified schema that accommodates all prompts."
+        )
 
+    # Collect prompts
+    prompts = []
+    for i in range(st.session_state.num_prompts):
+        if i == 0:
+            label = "Enter your prompt"
+            placeholder = "Example: Extract user information with name (string), age (integer), and email (string with email format)"
+        else:
+            label = f"Prompt {i + 1}"
+            placeholder = f"Enter additional prompt {i + 1} for unified schema generation"
+
+        prompt = st.text_area(
+            label,
+            height=120,
+            placeholder=placeholder,
+            help="Describe the structure you want to extract",
+            key=f"prompt_{i}",
+        )
+        prompts.append(prompt)
+
+    # Add/Remove prompt buttons
+    col_add, col_remove = st.columns(2)
+    with col_add:
+        if st.button("➕ Add Prompt", use_container_width=True):
+            st.session_state.num_prompts += 1
+            st.rerun()
+    with col_remove:
+        if st.session_state.num_prompts > 1:
+            if st.button("➖ Remove Last Prompt", use_container_width=True):
+                st.session_state.num_prompts -= 1
+                st.rerun()
+
+    st.markdown("---")
+
+    # Extract structure button
     col1, col2 = st.columns([1, 4])
     with col1:
         extract_button = st.button("🔍 Extract Structure", type="primary", use_container_width=True)
@@ -146,37 +207,46 @@ def render_structure_extraction_section(api_key: str, max_retries: int, use_high
             st.success("✅ Structure extracted successfully!")
 
     if extract_button:
-        handle_structure_extraction(prompt, api_key, max_retries, use_high_reasoning)
+        handle_structure_extraction(prompts, api_key, max_retries, use_high_reasoning)
 
 
-def handle_structure_extraction(prompt: str, api_key: str, max_retries: int, use_high_reasoning: bool) -> None:
+def handle_structure_extraction(prompts: list[str], api_key: str, max_retries: int, use_high_reasoning: bool) -> None:
     """Handle the structure extraction process.
 
     Args:
-        prompt: User's structure definition prompt
+        prompts: List of user's structure definition prompts
         api_key: OpenAI API key
         max_retries: Number of retry attempts
         use_high_reasoning: Whether to use high reasoning mode
     """
-    if not prompt.strip():
-        st.error("❌ Please enter a prompt first.")
+    # Filter out empty prompts
+    non_empty_prompts = [p.strip() for p in prompts if p.strip()]
+
+    if not non_empty_prompts:
+        st.error("❌ Please enter at least one prompt.")
         return
 
     try:
-        with st.spinner("Extracting structure..."):
+        with st.spinner(f"Extracting structure from {len(non_empty_prompts)} prompt(s)..."):
             # Initialize OpenAI client and extractor
             client = OpenAI(api_key=api_key)
             extractor = StructureExtractor(client, max_retries=max_retries)
 
-            # Extract structure
-            model = extractor.extract_structure(prompt, use_high_reasoning=use_high_reasoning)
+            # Extract structure with list of prompts
+            model = extractor.extract_structure(non_empty_prompts, use_high_reasoning=use_high_reasoning)
 
             # Store in session state
             st.session_state.extracted_model = model
             st.session_state.extracted_schema = model.model_json_schema()
             st.session_state.llm_response = None  # Reset LLM response
 
-            st.success("✅ Structure extracted successfully!")
+            if len(non_empty_prompts) > 1:
+                st.success(
+                    f"✅ Structure extracted successfully from {len(non_empty_prompts)} prompts! "
+                    "The schema accommodates all provided use cases."
+                )
+            else:
+                st.success("✅ Structure extracted successfully!")
             st.rerun()
 
     except Exception as e:
@@ -291,8 +361,8 @@ def render_llm_response_section() -> None:
     # Display response in JSON format
     st.json(st.session_state.llm_response)
 
-    # Download button for response
-    response_json = json.dumps(st.session_state.llm_response, indent=2)
+    # Download button for response with datetime serialization support
+    response_json = json.dumps(st.session_state.llm_response, indent=2, default=json_serial)
     st.download_button(
         label="⬇️ Download Response JSON",
         data=response_json,
